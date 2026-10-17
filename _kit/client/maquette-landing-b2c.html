@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WE CARE ÉNERGIE — Économisez sur vos factures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#141E4D;
+    --navy-2:#1E2F73;
+    --blue:#2C5FC4;
+    --gold:#F0B429;
+    --gold-deep:#D99B12;
+    --green:#4B8B3B;
+    --green-light:#EAF4E4;
+    --cream:#FBF3DE;
+    --paper:#FFFDF8;
+    --ink:#161821;
+    --ink-soft:#4B4E5C;
+    --line:rgba(20,30,77,0.12);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:'Work Sans',sans-serif; -webkit-font-smoothing:antialiased;}
+  h1,h2,h3,.disp{font-family:'Sora',sans-serif; color:var(--navy); margin:0;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--gold-deep); font-weight:500;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 24px;}
+  a{text-decoration:none;}
+
+  /* NAV */
+  .nav{position:sticky; top:0; z-index:60; background:rgba(255,253,248,0.92); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
+  .nav .wrap{display:flex; align-items:center; justify-content:space-between; padding:14px 24px;}
+  .brand{display:flex; align-items:center; gap:9px;}
+  .brand-name{font-family:'Sora',sans-serif; font-weight:800; color:var(--navy); font-size:16px; line-height:1.05;}
+  .brand-name span{display:block; color:var(--green); font-size:10px; letter-spacing:.1em; font-weight:700;}
+  .nav-cta{background:var(--navy); color:#fff; padding:10px 18px; border-radius:100px; font-size:13.5px; font-weight:600;}
+
+  /* HERO + SIMULATOR */
+  .hero{position:relative; overflow:hidden; padding:52px 0 60px; background:linear-gradient(160deg,var(--navy) 0%, var(--navy-2) 55%, var(--blue) 100%);}
+  .hero .wrap{display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center;}
+  @media (max-width:860px){ .hero .wrap{grid-template-columns:1fr;} }
+  .hero h1{color:#fff; font-size:38px; line-height:1.12; font-weight:800;}
+  .hero h1 em{font-style:normal; color:var(--gold);}
+  .hero p.lead{color:rgba(255,255,255,0.82); font-size:16px; line-height:1.55; margin-top:14px; max-width:440px;}
+  .trust-row{display:flex; gap:16px; flex-wrap:wrap; margin-top:22px;}
+  .trust-pill{display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.1); color:#fff; padding:7px 13px; border-radius:100px; font-size:12px; font-weight:600;}
+  .trust-pill svg{width:13px; height:13px; flex:0 0 auto;}
+
+  .simulator{background:var(--paper); border-radius:22px; padding:26px; box-shadow:0 30px 60px -20px rgba(10,15,40,0.5);}
+  .sim-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;}
+  .sim-head .disp{font-size:16px; font-weight:700;}
+  .sim-badge{background:rgba(75,139,59,0.12); color:var(--green); font-size:10.5px; font-weight:700; padding:4px 9px; border-radius:100px;}
+  .sim-sub{font-size:12.5px; color:var(--ink-soft); margin-bottom:18px;}
+  .sim-row{margin-bottom:16px;}
+  .sim-row label{display:flex; justify-content:space-between; font-size:13px; font-weight:600; color:var(--navy); margin-bottom:8px;}
+  .sim-row label .val{font-family:'IBM Plex Mono',monospace; color:var(--gold-deep);}
+  input[type="range"]{width:100%; accent-color:var(--gold-deep); height:6px;}
+  .sim-toggle{display:flex; gap:8px;}
+  .sim-toggle button{flex:1; padding:9px; border-radius:10px; border:1px solid var(--line); background:#fff; font-family:'Work Sans',sans-serif; font-size:12.5px; font-weight:600; color:var(--ink-soft); cursor:pointer;}
+  .sim-toggle button.active{background:var(--navy); color:#fff; border-color:var(--navy);}
+  .sim-result{margin-top:20px; padding:18px; background:var(--green-light); border-radius:16px; text-align:center;}
+  .sim-result .amount{font-family:'Sora',sans-serif; font-size:32px; font-weight:800; color:var(--green);}
+  .sim-result .amount small{display:block; font-family:'Work Sans',sans-serif; font-size:12px; font-weight:500; color:var(--ink-soft); margin-top:2px;}
+  .sim-cta{width:100%; margin-top:16px; background:var(--gold); color:var(--navy); border:none; padding:14px; border-radius:100px; font-weight:700; font-size:14.5px; cursor:pointer; font-family:'Work Sans',sans-serif;}
+  .sim-note{font-size:10.5px; color:var(--ink-soft); text-align:center; margin-top:8px;}
+
+  section{padding:60px 0;}
+  .section-head{max-width:600px; margin:0 auto 36px; text-align:center;}
+  .section-head h2{font-size:28px; font-weight:700; margin-top:8px;}
+
+  /* STEPS */
+  .steps3{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+  @media (max-width:760px){ .steps3{grid-template-columns:1fr;} }
+  .step3{background:var(--cream); border-radius:18px; padding:26px 22px; position:relative;}
+  .step3 .n{font-family:'Sora',sans-serif; font-weight:800; font-size:26px; color:var(--gold-deep); margin-bottom:10px;}
+  .step3 h3{font-size:16px; margin-bottom:8px;}
+  .step3 p{font-size:13.5px; color:var(--ink-soft); margin:0; line-height:1.45;}
+
+  /* AVANTAGES */
+  .adv-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:16px;}
+  @media (max-width:760px){ .adv-grid{grid-template-columns:1fr;} }
+  .adv{display:flex; gap:14px; align-items:flex-start; padding:18px; border:1px solid var(--line); border-radius:16px; background:#fff;}
+  .adv .ic{width:38px; height:38px; border-radius:10px; background:var(--green-light); display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+  .adv h3{font-size:14.5px; margin-bottom:4px;}
+  .adv p{font-size:13px; color:var(--ink-soft); margin:0; line-height:1.4;}
+
+  /* TRANSPARENCE */
+  .transparency{background:var(--navy); border-radius:26px; padding:34px 30px; color:#fff;}
+  .transparency h3{color:#fff; font-size:18px; margin-bottom:10px;}
+  .transparency p{color:rgba(255,255,255,0.78); font-size:13.5px; line-height:1.55; margin:0 0 8px;}
+  .transparency a{color:var(--gold); font-weight:600;}
+
+  /* TEMOIGNAGES */
+  .testi-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  @media (max-width:760px){ .testi-grid{grid-template-columns:1fr;} }
+  .testi{background:var(--cream); border-radius:16px; padding:20px;}
+  .testi p{font-size:13.5px; color:var(--ink); line-height:1.5; margin:0 0 12px; font-style:italic;}
+  .testi .who{font-size:12px; font-weight:700; color:var(--navy);}
+  .testi .stars{color:var(--gold-deep); font-size:13px; margin-bottom:8px;}
+
+  /* FAQ */
+  .faq-item{border-bottom:1px solid var(--line); padding:16px 0;}
+  .faq-item summary{cursor:pointer; font-weight:600; font-size:14.5px; color:var(--navy); list-style:none;}
+  .faq-item summary::-webkit-details-marker{display:none;}
+  .faq-item summary::after{content:"+"; float:right; font-size:18px; color:var(--gold-deep);}
+  .faq-item[open] summary::after{content:"–";}
+  .faq-item p{font-size:13.5px; color:var(--ink-soft); margin:10px 0 0; line-height:1.5;}
+
+  /* FORM */
+  .formsec{background:linear-gradient(160deg,var(--cream),#F8ECC8); border-radius:28px; padding:42px 34px;}
+  .form-inner{max-width:520px; margin:0 auto;}
+  .form-card{background:#fff; border-radius:20px; padding:26px; box-shadow:0 24px 50px -20px rgba(20,30,77,0.28);}
+  .field{margin-bottom:13px;}
+  .field label{display:block; font-size:12px; font-weight:600; color:var(--navy); margin-bottom:5px;}
+  .field input{width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--line); font-family:'Work Sans',sans-serif; font-size:13.5px; background:#FBFBFC;}
+  .consent{display:flex; gap:9px; align-items:flex-start; margin:14px 0; font-size:11.5px; color:var(--ink-soft); line-height:1.4;}
+  .consent input{margin-top:2px;}
+  .submit-btn{width:100%; margin-top:6px; background:var(--navy); color:#fff; border:none; padding:14px; border-radius:100px; font-weight:700; font-size:14.5px; cursor:pointer; font-family:'Work Sans',sans-serif;}
+
+  footer{background:var(--navy); color:rgba(255,255,255,0.65); padding:32px 0;}
+  footer .wrap{text-align:center;}
+  footer .legal{font-size:11px; color:rgba(255,255,255,0.45); margin-top:14px; line-height:1.6; max-width:640px; margin-left:auto; margin-right:auto;}
+
+  /* COOKIE BANNER */
+  .cookie-banner{position:fixed; bottom:0; left:0; right:0; background:var(--navy); color:#fff; padding:16px 20px; z-index:100; display:flex; gap:16px; align-items:center; flex-wrap:wrap; box-shadow:0 -10px 30px rgba(0,0,0,0.2);}
+  .cookie-banner p{font-size:12.5px; margin:0; flex:1 1 300px; color:rgba(255,255,255,0.8); line-height:1.4;}
+  .cookie-actions{display:flex; gap:8px;}
+  .cookie-actions button{padding:8px 16px; border-radius:100px; font-size:12px; font-weight:600; border:none; cursor:pointer; font-family:'Work Sans',sans-serif;}
+  .cookie-accept{background:var(--gold); color:var(--navy);}
+  .cookie-reject{background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.35) !important;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 48 48" fill="none">
+        <path d="M24 8a12 12 0 0 0-6 22.4V33h12v-2.6A12 12 0 0 0 24 8z" fill="#2C5FC4"/>
+        <rect x="19" y="34" width="10" height="4" rx="2" fill="#141E4D"/>
+      </svg>
+      <div class="brand-name">WE CARE<span>ÉNERGIE · PARTICULIERS</span></div>
+    </div>
+    <a href="#simulateur" class="nav-cta">Simuler mes économies</a>
+  </div>
+</nav>
+
+<header class="hero" id="simulateur">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow" style="color:#FFD98A;">Pour les particuliers</span>
+      <h1 style="margin-top:14px;">Combien pouvez-vous <em>économiser</em> sur vos factures d'énergie ?</h1>
+      <p class="lead">Une estimation en 30 secondes, sans engagement. Si ça vous intéresse, un conseiller vous rappelle avec un comparatif personnalisé.</p>
+      <div class="trust-row">
+        <span class="trust-pill">✓ 100% gratuit</span>
+        <span class="trust-pill">✓ Sans engagement</span>
+        <span class="trust-pill">✓ Changement de fournisseur sans coupure</span>
+      </div>
+    </div>
+
+    <div class="simulator">
+      <div class="sim-head">
+        <span class="disp">Simulateur d'économies</span>
+        <span class="sim-badge">30 sec</span>
+      </div>
+      <div class="sim-sub">Estimation indicative, non contractuelle</div>
+
+      <div class="sim-row">
+        <div class="sim-toggle">
+          <button type="button" class="active" onclick="setEnergy(this,'elec')">Électricité</button>
+          <button type="button" onclick="setEnergy(this,'gaz')">Gaz</button>
+          <button type="button" onclick="setEnergy(this,'les2')">Les deux</button>
+        </div>
+      </div>
+
+      <div class="sim-row">
+        <label>Facture mensuelle actuelle <span class="val" id="factureVal">120 €</span></label>
+        <input type="range" id="facture" min="40" max="400" value="120" step="5" oninput="updateSim()">
+      </div>
+
+      <div class="sim-row">
+        <label>Taille du logement <span class="val" id="logementVal">Appartement</span></label>
+        <input type="range" id="logement" min="0" max="2" value="0" step="1" oninput="updateSim()">
+      </div>
+
+      <div class="sim-result">
+        <div class="amount" id="economieVal">-180 €<small>d'économie estimée par an</small></div>
+      </div>
+      <button class="sim-cta" onclick="document.getElementById('lead-form').scrollIntoView({behavior:'smooth'})">Recevoir mon comparatif personnalisé →</button>
+      <div class="sim-note">Calcul indicatif basé sur les tendances de marché — le montant réel dépend de votre profil de consommation.</div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Comment ça marche</span>
+      <h2>Trois étapes, zéro complication</h2>
+    </div>
+    <div class="steps3">
+      <div class="step3"><div class="n">01</div><h3>Vous simulez</h3><p>Renseignez votre facture actuelle, on vous donne une estimation immédiate de vos économies possibles.</p></div>
+      <div class="step3"><div class="n">02</div><h3>On compare pour vous</h3><p>Un conseiller WE CARE ÉNERGIE vous rappelle sous 24h avec un comparatif des meilleures offres du marché.</p></div>
+      <div class="step3"><div class="n">03</div><h3>Vous changez, sans coupure</h3><p>Si l'offre vous convient, le changement de fournisseur se fait sans interruption de service, gratuitement.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Pourquoi nous</span>
+      <h2>Un vrai conseiller, pas juste un algorithme</h2>
+    </div>
+    <div class="adv-grid">
+      <div class="adv"><div class="ic">👤</div><div><h3>Un interlocuteur humain</h3><p>Derrière la simulation, une équipe de conseillers qui répond à vos questions par téléphone ou WhatsApp.</p></div></div>
+      <div class="adv"><div class="ic">🔄</div><div><h3>Liberté totale</h3><p>Vous pouvez changer de fournisseur à tout moment, gratuitement — c'est votre droit en tant que particulier.</p></div></div>
+      <div class="adv"><div class="ic">⏱️</div><div><h3>Sans interruption</h3><p>Le changement de fournisseur ne coupe jamais votre électricité ou votre gaz.</p></div></div>
+      <div class="adv"><div class="ic">🔒</div><div><h3>Données protégées</h3><p>Vos informations restent confidentielles et ne sont utilisées que pour établir votre comparatif.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="transparency">
+      <span class="eyebrow" style="color:var(--gold);">Transparence</span>
+      <h3 style="margin-top:10px;">Qui sommes-nous ?</h3>
+      <p>WE CARE ÉNERGIE est un courtier indépendant. Nous vous accompagnons dans la comparaison et la négociation de vos contrats d'énergie, et nous sommes rémunérés par les fournisseurs partenaires lorsqu'un contrat est signé grâce à notre mise en relation.</p>
+      <p>Nous ne sommes pas le comparateur officiel du médiateur national de l'énergie. Vous pouvez également consulter le comparateur indépendant et gratuit du médiateur sur <a href="https://www.energie-info.fr" target="_blank" rel="noopener">energie-info.fr</a>.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Ils nous ont fait confiance</span>
+      <h2>Ce qu'en disent nos clients</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi"><div class="stars">★★★★★</div><p>"Simulation faite un soir, rappelé le lendemain matin. Le changement s'est fait sans que je m'en rende compte."</p><div class="who">Famille D. — région lyonnaise</div></div>
+      <div class="testi"><div class="stars">★★★★★</div><p>"J'avais peur de perdre du temps, ça a pris 10 minutes au téléphone avec un vrai conseiller."</p><div class="who">M. R. — Île-de-France</div></div>
+      <div class="testi"><div class="stars">★★★★☆</div><p>"Bon accompagnement, explications claires sur les différentes offres."</p><div class="who">Mme A. — Nouvelle-Aquitaine</div></div>
+    </div>
+    <p style="text-align:center; font-size:11px; color:var(--ink-soft); margin-top:14px;">Témoignages illustratifs — à remplacer par de vrais avis clients une fois la formule B2C lancée.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Questions fréquentes</span>
+      <h2>Ce que vous devez savoir</h2>
+    </div>
+    <div style="max-width:680px; margin:0 auto;">
+      <details class="faq-item">
+        <summary>Est-ce que ça coupe mon électricité pendant le changement ?</summary>
+        <p>Non, jamais. Le réseau physique (Enedis/GRDF) reste le même quel que soit votre fournisseur — seul le contrat commercial change.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Puis-je changer d'avis après avoir signé ?</summary>
+        <p>Oui. Pour tout contrat souscrit à distance, vous disposez d'un délai de rétractation de 14 jours, sans justification.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Est-ce vraiment gratuit ?</summary>
+        <p>Oui, la simulation et l'accompagnement sont gratuits pour vous. Nous sommes rémunérés par le fournisseur lors de la souscription.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Serai-je démarché par téléphone si je ne veux pas ?</summary>
+        <p>Nous ne vous contactons que si vous avez explicitement accepté d'être rappelé via le formulaire ci-dessous. Vous pouvez retirer ce consentement à tout moment.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section id="lead-form">
+  <div class="wrap">
+    <div class="formsec">
+      <div class="form-inner">
+        <div class="section-head" style="margin-bottom:20px;">
+          <span class="eyebrow">Dernière étape</span>
+          <h2 style="font-size:24px;">Recevez votre comparatif personnalisé</h2>
+        </div>
+        <div class="form-card">
+          <div class="field"><label>Nom &amp; prénom</label><input type="text" placeholder="Jean Dupont"></div>
+          <div class="field"><label>Email</label><input type="email" placeholder="vous@email.fr"></div>
+          <div class="field"><label>Téléphone</label><input type="tel" placeholder="06 12 34 56 78"></div>
+          <div class="field"><label>Code postal</label><input type="text" placeholder="69000"></div>
+
+          <label class="consent">
+            <input type="checkbox" required>
+            J'accepte d'être recontacté(e) par téléphone par WE CARE ÉNERGIE pour recevoir mon comparatif personnalisé. Je peux retirer ce consentement à tout moment.
+          </label>
+          <label class="consent">
+            <input type="checkbox" required>
+            J'ai pris connaissance de la politique de confidentialité et j'accepte que mes données soient utilisées pour établir mon comparatif.
+          </label>
+
+          <button class="submit-btn" type="button">Recevoir mon comparatif gratuit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div style="font-family:'Sora',sans-serif; font-weight:700; color:#fff;">WE CARE ÉNERGIE</div>
+    <div class="legal">
+      Maquette de présentation — WE CARE ÉNERGIE × STIPway. WE CARE ÉNERGIE, courtier en énergie, rémunéré par les fournisseurs partenaires. Comparateur non officiel — comparateur du médiateur national de l'énergie disponible sur energie-info.fr. Droit de rétractation de 14 jours pour tout contrat souscrit à distance.
+    </div>
+  </div>
+</footer>
+
+<div class="cookie-banner" id="cookieBanner">
+  <p>Nous utilisons des cookies pour mesurer l'audience et la performance de nos campagnes publicitaires (Meta, Google). Vous pouvez accepter ou refuser à tout moment.</p>
+  <div class="cookie-actions">
+    <button class="cookie-reject" onclick="document.getElementById('cookieBanner').style.display='none'">Refuser</button>
+    <button class="cookie-accept" onclick="document.getElementById('cookieBanner').style.display='none'">Accepter</button>
+  </div>
+</div>
+
+<script>
+  let energyType = 'elec';
+  function setEnergy(btn, type){
+    energyType = type;
+    document.querySelectorAll('.sim-toggle button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    updateSim();
+  }
+  function updateSim(){
+    const facture = parseInt(document.getElementById('facture').value);
+    const logementIdx = parseInt(document.getElementById('logement').value);
+    const logementLabels = ['Appartement','Maison','Grande maison'];
+    document.getElementById('logementVal').textContent = logementLabels[logementIdx];
+    document.getElementById('factureVal').textContent = facture + ' €';
+
+    // simple illustrative estimate, non contractual
+    let rate = energyType === 'les2' ? 0.16 : 0.13;
+    const annual = facture * 12;
+    const saving = Math.round(annual * rate / 5) * 5;
+    document.getElementById('economieVal').innerHTML = '-' + saving + ' €<small>d\\'économie estimée par an</small>';
+  }
+  updateSim();
+</script>
+
+</body>
+</html>
