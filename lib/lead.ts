@@ -1,16 +1,16 @@
 import { answerLabel, getFlow, type Answers } from "@/config/jawabot";
-import { segments, type Segment } from "@/config/services";
+import { offers, offerShown, segments, type Segment } from "@/config/services";
 import { scoreLead, type LeadScore } from "./scoring";
 import type { Attribution } from "./utm";
 
 /**
  * Modèle de lead unique (Jawabot + formulaire de rappel), partagé client / serveur.
- * Chaîne cible : lead → scoring → CRM → WhatsApp Farid.
+ * Chaîne cible : lead → scoring → CRM (MENS) → alerte WhatsApp du conseiller.
  */
 
-export const CONSENT_TEXT_VERSION = "2026-09-v1";
+export const CONSENT_TEXT_VERSION = "2026-10-wce-v1";
 export const CONSENT_TEXT =
-  "J’accepte que HDF Bâti utilise ces informations pour me recontacter au sujet de ma demande (téléphone, e-mail ou WhatsApp). Je peux retirer mon accord à tout moment.";
+  "J’accepte que WE CARE ÉNERGIE utilise ces informations pour me recontacter au sujet de ma demande (téléphone, e-mail ou WhatsApp). Je peux retirer mon accord à tout moment.";
 
 export type LeadSource = "jawabot" | "callback_form";
 
@@ -54,20 +54,16 @@ export const bestTimeOptions = [
 /** Formulaire de rappel : projets proposés selon le profil choisi (un parcours par profil). */
 export const callbackProjectOptions: Record<Segment, readonly { value: string; label: string }[]> = {
   particulier: [
-    { value: "pac", label: "Pompe à chaleur" },
+    { value: "facture", label: "Réduire ma facture d’électricité ou de gaz" },
     { value: "photovoltaique", label: "Panneaux photovoltaïques" },
-    { value: "renovation", label: "Rénovation énergétique" },
+    ...(offerShown(offers.pac) ? [{ value: "pac", label: "Pompe à chaleur" }] : []),
   ],
   professionnel: [
-    { value: "pac", label: "Pompe à chaleur / chauffage" },
+    { value: "contrats", label: "Contrats d’électricité et de gaz" },
     { value: "photovoltaique", label: "Photovoltaïque" },
-    { value: "performance", label: "Performance du bâtiment" },
-    { value: "contrats", label: "Contrats d’énergie" },
   ],
   collectivite: [
-    { value: "contrats", label: "Contrats d’énergie" },
-    { value: "pac", label: "Chauffage / pompe à chaleur" },
-    { value: "photovoltaique", label: "Photovoltaïque" },
+    { value: "contrats", label: "Contrats d’électricité et de gaz" },
     { value: "global", label: "Accompagnement global" },
   ],
 };
@@ -88,13 +84,13 @@ export const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(
 export function makeLeadId(date = new Date()): string {
   const d = date.toISOString().slice(0, 10).replace(/-/g, "");
   const rnd = Math.random().toString(36).slice(2, 6).toUpperCase();
-  return `HDF-${d}-${rnd}`;
+  return `WCE-${d}-${rnd}`;
 }
 
-/** Résumé court, exploitable par Farid (WhatsApp / CRM). */
+/** Résumé court, exploitable par le conseiller (WhatsApp / CRM). */
 export function buildSummary(input: Pick<LeadInput, "segment" | "answers" | "contact" | "source">, score: LeadScore): string {
   const seg = segments[input.segment].label;
-  const lines: string[] = [`${seg} — ${input.source === "jawabot" ? "Fiche d’étude" : "Demande de rappel"}`];
+  const lines: string[] = [`${seg} — ${input.source === "jawabot" ? "Fiche" : "Demande de rappel"}`];
   const fromFiche = getFlow(input.segment).some((s) => s.type !== "contact" && input.answers[s.id]);
   if (input.source === "jawabot" || fromFiche) {
     // Fiche d'étude, ou rappel qui joint les réponses d'une fiche commencée.
@@ -134,12 +130,12 @@ export function whatsappMessageForLead(leadId: string | undefined, segment: Segm
   const ref = leadId ? ` (réf. ${leadId})` : "";
   const intro =
     segment === "particulier"
-      ? "Bonjour HDF Bâti, je viens de décrire mon projet sur votre site"
-      : "Bonjour HDF Bâti, je viens de vous transmettre ma demande sur votre site";
+      ? "Bonjour WE CARE ÉNERGIE, je viens de remplir ma fiche sur votre site"
+      : "Bonjour WE CARE ÉNERGIE, je viens de vous transmettre ma demande sur votre site";
   return `${intro}${ref}. Je souhaite échanger avec vous.`;
 }
 
-export const genericWhatsappMessage = "Bonjour HDF Bâti, je souhaite échanger au sujet de mon projet.";
+export const genericWhatsappMessage = "Bonjour WE CARE ÉNERGIE, je souhaite comparer mes offres d’énergie.";
 
 export interface SubmitResult {
   ok: boolean;
@@ -148,7 +144,7 @@ export interface SubmitResult {
   error?: string;
   /**
    * « whatsapp » : le serveur n'a pu transmettre la demande à aucune destination ;
-   * le visiteur l'envoie lui-même à HDF Bâti par WhatsApp (texte prêt dans whatsappText).
+   * le visiteur l'envoie lui-même à WE CARE ÉNERGIE par WhatsApp (texte prêt dans whatsappText).
    */
   handoff?: "whatsapp";
   whatsappText?: string;
@@ -159,7 +155,7 @@ export function visitorWhatsappText(lead: LeadRecord): string {
   const lines = lead.summary.split("\n").filter((l) => !/^Score\s*:/.test(l));
   const phone = lead.contact.phone.replace(/^\+33/, "0").replace(/(\d{2})(?=\d)/g, "$1 ");
   return [
-    `Bonjour HDF Bâti, voici ma demande (réf. ${lead.id}) :`,
+    `Bonjour WE CARE ÉNERGIE, voici ma demande (réf. ${lead.id}) :`,
     "",
     ...lines,
     "",

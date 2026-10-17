@@ -8,8 +8,7 @@ export const anchors = {
   professionnels: "professionnels",
   collectivites: "collectivites",
   energie: "energie",
-  aides: "aides",
-  pourquoi: "pourquoi-hdf-bati",
+  pourquoi: "pourquoi-we-care-energie",
   avis: "avis",
   faq: "questions-frequentes",
   rappel: "etre-rappele",
@@ -20,7 +19,6 @@ export const mainNav = [
   { label: "Particuliers", href: "/particuliers", segment: "particulier" },
   { label: "Professionnels", href: "/professionnels", segment: "professionnel" },
   { label: "Collectivités", href: "/collectivites", segment: "collectivite" },
-  { label: "Aides", href: `/particuliers#${anchors.aides}` },
   { label: "FAQ", href: `/#${anchors.faq}` },
   { label: "Contact", href: `/#${anchors.contact}` },
 ] as const;
@@ -30,7 +28,6 @@ export const footerNav = {
     { label: "Particuliers", href: "/particuliers", segment: "particulier" },
     { label: "Professionnels", href: "/professionnels", segment: "professionnel" },
     { label: "Collectivités", href: "/collectivites", segment: "collectivite" },
-    { label: "Aides financières", href: `/particuliers#${anchors.aides}` },
   ],
   legal: [
     { label: "Mentions légales", href: "/mentions-legales" },

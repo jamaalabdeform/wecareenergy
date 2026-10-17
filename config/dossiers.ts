@@ -6,8 +6,8 @@ import type { Validated } from "./validation";
  * Contenu des pages profil, composées comme une fiche d'étude :
  * sommaire (les étapes) puis quatre rubriques A → D.
  *
- * Sources : Questionnaire Farid (RDV du 27/09/2026) pour le particulier ;
- * les précisions pro / collectivité sont en attente de validation. TODO_HDF_VALIDATION
+ * Sources : réunion du 19/07/2026, maquette de landing B2C, présentation MENS (B2B).
+ * TODO_WCE_VALIDATION : textes pro / collectivité à relire avec Jamel MER.
  */
 
 export interface Rubrique {
@@ -36,8 +36,8 @@ export interface Dossier {
 const rappel: Rubrique = {
   title: "Qui vous rappelle, et quand",
   items: [
-    "Un responsable de HDF Bâti reprend lui-même votre fiche : pas de centre d’appels.",
-    "Il vous répond dans l’heure, ou vous rappelle au moment que vous avez indiqué, avec vos réponses sous les yeux.",
+    "Un conseiller WE CARE ÉNERGIE reprend votre fiche, avec vos réponses sous les yeux.",
+    "Il vous rappelle sous 24 h, au créneau que vous avez choisi.",
     "Vous n’avez pas à tout réexpliquer : l’échange porte directement sur votre situation.",
   ],
   precise: positioning.reactivite.precise,
@@ -47,108 +47,112 @@ export const dossiers: Record<Segment, Dossier> = {
   particulier: {
     segment: "particulier",
     slug: "particuliers",
-    title: "Pompe à chaleur et rénovation énergétique de votre maison",
-    lead: "Décrivez votre maison et votre chauffage actuel : HDF Bâti étudie si le projet est adapté, et quelles aides pourraient s’appliquer, avant de vous proposer quoi que ce soit.",
-    metaTitle: "Particuliers : pompe à chaleur et rénovation énergétique",
+    title: "Électricité, gaz, photovoltaïque : payez le juste prix pour votre logement",
+    lead: "Décrivez votre logement et votre facture actuelle : un conseiller WE CARE ÉNERGIE compare les offres du marché et vous rappelle sous 24 h. Sans engagement.",
+    metaTitle: "Particuliers : comparer vos offres d’électricité et de gaz",
     metaDescription:
-      "Pompe à chaleur, photovoltaïque et rénovation énergétique de votre maison dans les Hauts-de-France. HDF Bâti étudie votre projet et les aides applicables avant toute proposition.",
-    sommaireTitle: "Les 5 étapes de votre projet",
+      "Un conseiller WE CARE ÉNERGIE compare les offres d’électricité et de gaz pour votre logement et vous rappelle sous 24 h. Changement de fournisseur sans coupure, sans engagement.",
+    sommaireTitle: "Les 5 étapes",
     sommaire: parcoursParticulier,
     etudions: {
-      title: "Ce que nous étudions",
+      title: "Ce que nous comparons",
       items: [
-        "Une étude complète de votre maison : dimensionnement de l’installation et choix du matériel installé.",
-        "Votre maison : nos projets de pompe à chaleur concernent les maisons individuelles.",
-        "Votre chauffage actuel (gaz, fioul, électrique…) et ce qu’une pompe à chaleur, des panneaux ou des travaux de rénovation changeraient.",
-        "Les aides qui pourraient s’appliquer à votre foyer, selon conditions d’éligibilité.",
+        "Votre consommation d’électricité et de gaz, à partir de votre facture actuelle.",
+        "Les offres des fournisseurs avec lesquels nous travaillons, au regard de votre profil.",
+        "Si vous le souhaitez : l’intérêt de panneaux photovoltaïques pour produire une partie de votre électricité.",
       ],
     },
     preparez: {
       title: "Ce que vous préparez",
       items: [
-        "L’adresse du logement concerné.",
-        "Le mode de chauffage actuel, et si possible son âge.",
-        "Votre dernier avis d’imposition : il permet de vérifier l’éligibilité aux aides. Nous vous indiquons comment nous l’envoyer par e-mail.",
+        "Votre dernière facture d’électricité ou de gaz : le fournisseur, l’offre et la consommation annuelle y figurent.",
+        "Pas de facture sous la main ? Le montant approximatif de votre mensualité suffit pour un premier échange.",
       ],
     },
     rappel,
     recevez: {
       title: "Ce que vous recevez",
       items: [
-        "Une réponse claire : le projet est-il adapté à votre maison ?",
-        "Si c’est le cas, une proposition établie à partir de cette étude, avec le matériel choisi et les étapes expliquées avant tout engagement.",
-        "Un accompagnement complet dans les démarches d’aides, sans avance de frais de votre part. Selon conditions d’éligibilité.",
+        "Un comparatif établi à partir de votre consommation réelle, expliqué par téléphone.",
+        "Aucune obligation : si votre contrat actuel reste le plus intéressant, nous vous le disons.",
+        "Si vous changez, un contrat signé en ligne chez le fournisseur, avec un droit de rétractation de 14 jours.",
       ],
-      precise: positioning.aides.precise,
     },
   },
   professionnel: {
     segment: "professionnel",
     slug: "professionnels",
-    title: "Les besoins énergétiques de votre activité, étudiés sur place",
-    lead: "Bâtiments, chauffage, production d’énergie ou contrats d’électricité et de gaz : HDF Bâti part de votre activité réelle pour identifier les pistes utiles.",
-    metaTitle: "Professionnels : pompe à chaleur, photovoltaïque et contrats d’énergie",
+    title: "Les contrats d’énergie de votre entreprise, relus et suivis",
+    lead: "Électricité et gaz, un site ou plusieurs : WE CARE ÉNERGIE relit vos contrats, suit leurs échéances et consulte les fournisseurs au bon moment.",
+    metaTitle: "Professionnels : contrats d’électricité et de gaz",
     metaDescription:
-      "Entreprises, commerces, bâtiments tertiaires et agricoles : HDF Bâti étudie vos bâtiments et vos contrats d’énergie pour identifier les pistes d’optimisation.",
-    sommaireTitle: "Les 5 étapes de l’étude",
+      "Commerces, bureaux, artisans, industrie : WE CARE ÉNERGIE relit vos contrats d’électricité et de gaz, suit leurs échéances et consulte les fournisseurs pour vous.",
+    sommaireTitle: "Les 5 étapes de l’accompagnement",
     sommaire: parcoursPro,
     etudions: {
       title: "Ce que nous étudions",
       items: [
-        "Vos bâtiments et leur usage : surface, nombre de sites, activité.",
-        "Vos contrats d’électricité et de gaz et leurs échéances.",
-        "Les pistes possibles : pompe à chaleur, photovoltaïque, performance du bâtiment.",
+        "Vos contrats d’électricité et de gaz : fournisseur, prix, durée d’engagement, date d’échéance.",
+        "Vos consommations et le nombre de sites concernés.",
+        "Si c’est pertinent : une installation photovoltaïque sur vos bâtiments.",
       ],
     },
     preparez: {
       title: "Ce que vous préparez",
       items: [
-        "Vos dernières factures d’électricité : elles permettent d’étudier vos consommations et votre contrat.",
-        "Les informations que vous avez sous la main sur vos bâtiments suffisent pour un premier échange.",
+        "Vos dernières factures d’électricité et de gaz.",
+        "La date de fin de vos contrats, si vous la connaissez. Un contrat encore engagé plusieurs années peut tout de même être étudié.",
       ],
     },
     rappel,
     recevez: {
       title: "Ce que vous recevez",
       items: [
-        "Une lecture de votre situation et les pistes identifiées, avec leurs conditions et leurs limites.",
-        "Pas d’économie chiffrée avant l’étude de votre dossier.",
-        "Un interlocuteur unique pour la mise en œuvre et le suivi.",
+        "Une lecture claire de vos contrats et de leurs échéances.",
+        "Les offres obtenues, avec leurs conditions et leurs limites. Pas d’économie chiffrée avant l’étude de votre dossier.",
+        "Un interlocuteur unique, qui vous alerte avant chaque renouvellement.",
       ],
     },
   },
   collectivite: {
     segment: "collectivite",
     slug: "collectivites",
-    title: "Les contrats d’énergie de votre collectivité, relus et optimisés",
-    lead: "Communes, intercommunalités, établissements publics et bailleurs : HDF Bâti analyse vos contrats d’électricité et de gaz, vos échéances et vos bâtiments.",
-    metaTitle: "Collectivités : optimisation des contrats d’énergie",
+    title: "Les contrats d’énergie de votre collectivité, relus et suivis",
+    lead: "Communes, intercommunalités, établissements publics : WE CARE ÉNERGIE analyse vos contrats d’électricité et de gaz, leurs échéances et vos consommations.",
+    metaTitle: "Collectivités : contrats d’électricité et de gaz",
     metaDescription:
-      "Communes, intercommunalités, établissements publics : analyse de vos contrats d’électricité et de gaz, de leurs échéances et accompagnement de vos projets de bâtiments.",
-    sommaireTitle: "Les 5 étapes de l’étude",
+      "Communes, intercommunalités, établissements publics : analyse de vos contrats d’électricité et de gaz et suivi de leurs échéances par WE CARE ÉNERGIE.",
+    sommaireTitle: "Les 5 étapes de l’accompagnement",
     sommaire: parcoursPro,
     etudions: {
       title: "Ce que nous étudions",
       items: [
         "Vos contrats d’électricité et de gaz, et leurs échéances de renouvellement.",
         "Le nombre de sites et les consommations, quand vous les connaissez.",
-        "Les projets de vos bâtiments publics : chauffage, photovoltaïque.",
       ],
     },
     preparez: {
       title: "Ce que vous préparez",
       items: [
-        "Vos dernières factures d’électricité : elles permettent d’étudier vos consommations et vos contrats.",
+        "Vos dernières factures d’électricité et de gaz.",
         "Une estimation du nombre de sites et la date de fin des contrats suffisent pour un premier échange.",
       ],
     },
-    rappel,
+    rappel: {
+      title: "Comment nous échangeons",
+      items: [
+        "Un conseiller WE CARE ÉNERGIE reprend votre fiche, avec vos réponses sous les yeux.",
+        "Les échanges se font par e-mail si vous le préférez : les pièces restent traçables pour vos services.",
+        "Vous n’avez pas à tout réexpliquer : l’échange porte directement sur vos contrats.",
+      ],
+      precise: positioning.reactivite.precise,
+    },
     recevez: {
       title: "Ce que vous recevez",
       items: [
         "Une lecture de vos contrats et des pistes identifiées, avec leurs conditions et leurs limites.",
         "Pas d’économie chiffrée avant l’étude de votre dossier.",
-        "Un interlocuteur unique pour la suite.",
+        "Un interlocuteur unique, qui vous alerte avant chaque échéance.",
       ],
     },
   },

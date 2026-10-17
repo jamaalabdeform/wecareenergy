@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Loader2, MessageCircle } from "lucide-react";
-import { company, telHref, whatsappHref } from "@/config/company";
+import { company, hasPhone, telHref, whatsappHref } from "@/config/company";
 import { newEventId, track } from "@/lib/analytics";
 import { readConsent } from "@/lib/consent";
 import { bestTimeOptions, CONSENT_TEXT, CONSENT_TEXT_VERSION, normalizeFrenchPhone, submitLead } from "@/lib/lead";
@@ -16,7 +16,7 @@ type Values = { segment: Segment | ""; name: string; phone: string; bestTime: st
 /** Réponses déjà données dans la fiche d'étude (sessionStorage, réponses au projet seulement). */
 function readFiche(defaultSegment?: Segment): { segment: Segment; answers: Record<string, string> } | null {
   try {
-    const keys = defaultSegment ? [`hdf-fiche:${defaultSegment}`] : ["hdf-fiche:accueil", ...segmentOrder.map((s) => `hdf-fiche:${s}`)];
+    const keys = defaultSegment ? [`wce-fiche:${defaultSegment}`] : ["wce-fiche:accueil", ...segmentOrder.map((s) => `wce-fiche:${s}`)];
     for (const k of keys) {
       const raw = sessionStorage.getItem(k);
       if (!raw) continue;
@@ -114,10 +114,10 @@ export function CallbackForm({ defaultSegment }: { defaultSegment?: Segment }) {
       <div className="rounded-md bg-white text-ink shadow-[var(--shadow-sheet)]" role="status">
         <div className="flex items-start justify-between gap-3 border-b border-line px-5 pt-4 pb-3 sm:px-7">
           <p className="text-sm font-bold text-deep">Demande de rappel</p>
-          <span className="inline-flex shrink-0 items-center rounded-[3px] border-2 border-hdf/70 px-2 py-0.5 text-[0.7rem] font-bold tracking-[0.06em] text-hdf uppercase">Prête</span>
+          <span className="inline-flex shrink-0 items-center rounded-[3px] border-2 border-brand/70 px-2 py-0.5 text-[0.7rem] font-bold tracking-[0.06em] text-brand uppercase">Prête</span>
         </div>
         <div className="px-5 py-5 sm:px-7">
-          <p className="text-lg font-bold text-deep">Dernière étape : envoyez-la à HDF Bâti</p>
+          <p className="text-lg font-bold text-deep">Dernière étape : envoyez-la à WE CARE ÉNERGIE</p>
           <p className="mt-1.5 text-[0.95rem] leading-relaxed text-muted">Un appui ouvre WhatsApp avec votre demande déjà rédigée : il ne reste qu’à l’envoyer.</p>
           <a
             href={whatsappHref(handoff.text)}
@@ -134,6 +134,7 @@ export function CallbackForm({ defaultSegment }: { defaultSegment?: Segment }) {
             <MessageCircle className="size-5" aria-hidden />
             Envoyer ma demande sur WhatsApp
           </a>
+          {hasPhone && (
           <p className="mt-3 text-sm text-muted">
             Pas de WhatsApp ? Appelez le{" "}
             <a href={telHref} data-track="phone" data-track-location="rappel_relais" className="tabular font-semibold whitespace-nowrap text-deep underline">
@@ -141,6 +142,7 @@ export function CallbackForm({ defaultSegment }: { defaultSegment?: Segment }) {
             </a>
             .
           </p>
+          )}
         </div>
       </div>
     );
@@ -152,10 +154,10 @@ export function CallbackForm({ defaultSegment }: { defaultSegment?: Segment }) {
       <div className="rounded-md bg-white text-ink shadow-[var(--shadow-sheet)]" role="status">
         <div className="flex items-start justify-between gap-3 border-b border-line px-5 pt-4 pb-3 sm:px-7">
           <p className="text-sm font-bold text-deep">Demande de rappel</p>
-          <span className="stamp-press inline-flex shrink-0 items-center rounded-[3px] border-2 border-hdf bg-hdf px-2 py-0.5 text-[0.7rem] font-bold tracking-[0.06em] text-white uppercase">Transmise</span>
+          <span className="stamp-press inline-flex shrink-0 items-center rounded-[3px] border-2 border-brand bg-brand px-2 py-0.5 text-[0.7rem] font-bold tracking-[0.06em] text-white uppercase">Transmise</span>
         </div>
         <div className="px-5 py-5 sm:px-7">
-          <p className="text-lg font-bold text-deep">Merci, HDF Bâti vous rappelle.</p>
+          <p className="text-lg font-bold text-deep">Merci, un conseiller vous rappelle sous 24 h.</p>
           {best && (
             <p className="mt-2 text-sm text-deep">
               Moment choisi : <strong>{best.toLowerCase()}</strong>.
@@ -187,7 +189,7 @@ export function CallbackForm({ defaultSegment }: { defaultSegment?: Segment }) {
                 <label
                   key={id}
                   className={cn(
-                    "group flex min-h-12 cursor-pointer items-center gap-2.5 rounded-md border px-3 text-sm font-semibold text-deep transition-colors hover:border-hdf has-[:checked]:border-hdf has-[:checked]:bg-surface has-[:focus-visible]:outline has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-navy",
+                    "group flex min-h-12 cursor-pointer items-center gap-2.5 rounded-md border px-3 text-sm font-semibold text-deep transition-colors hover:border-brand has-[:checked]:border-brand has-[:checked]:bg-surface has-[:focus-visible]:outline has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand-dark",
                     errors.segment ? "border-[#b42318]" : "border-deep/20",
                   )}
                 >
@@ -202,8 +204,8 @@ export function CallbackForm({ defaultSegment }: { defaultSegment?: Segment }) {
                     }}
                     className="sr-only"
                   />
-                  <span aria-hidden className="grid size-5 shrink-0 place-items-center rounded-[3px] border-2 border-deep/35 group-has-[:checked]:border-hdf">
-                    <span className="size-2.5 rounded-[1px] bg-hdf opacity-0 group-has-[:checked]:opacity-100" />
+                  <span aria-hidden className="grid size-5 shrink-0 place-items-center rounded-[3px] border-2 border-deep/35 group-has-[:checked]:border-brand">
+                    <span className="size-2.5 rounded-[1px] bg-brand opacity-0 group-has-[:checked]:opacity-100" />
                   </span>
                   <span className="flex-1">{segments[id].chooserLabel}</span>
                   <span aria-hidden className={cn("h-5 w-1 rounded-[1px]", segmentTone(id).mark)} />
@@ -241,10 +243,15 @@ export function CallbackForm({ defaultSegment }: { defaultSegment?: Segment }) {
       </div>
       {status === "error" && (
         <p className="mt-4 rounded-md bg-[#fdecea] p-3 text-sm text-[#8b1d12]" role="alert">
-          L’envoi n’a pas abouti. Réessayez ou appelez-nous au{" "}
-          <a href={telHref} data-track="phone" data-track-location="callback_error" className="font-semibold underline">
-            {company.phone.display}
-          </a>
+          L’envoi n’a pas abouti. Réessayez dans un instant
+          {hasPhone && (
+            <>
+              {" "}ou appelez-nous au{" "}
+              <a href={telHref} data-track="phone" data-track-location="callback_error" className="font-semibold underline">
+                {company.phone.display}
+              </a>
+            </>
+          )}
           .
         </p>
       )}

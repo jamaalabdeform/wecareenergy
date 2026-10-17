@@ -13,7 +13,7 @@ export function DossierEntries() {
     <section id={anchors.projets} data-section="projets" aria-labelledby="projets-title" className="bg-white py-14 sm:py-20">
       <Container>
         <h2 id="projets-title" className="max-w-2xl text-[1.85rem] leading-[1.1] font-bold text-deep sm:text-4xl">
-          Trois dossiers, trois façons d’étudier
+          Une porte d’entrée pour chaque profil
         </h2>
         <ul className="mt-10 grid gap-x-6 gap-y-10 lg:grid-cols-3">
           {projectCards.map((c) => {

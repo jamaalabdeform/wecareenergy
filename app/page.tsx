@@ -4,7 +4,7 @@ import { Callback } from "@/components/sections/Callback";
 import { Contact } from "@/components/sections/Contact";
 import { Faq } from "@/components/sections/Faq";
 import { GoogleReviews } from "@/components/sections/GoogleReviews";
-import { WhyHdf } from "@/components/sections/WhyHdf";
+import { WhyUs } from "@/components/sections/WhyUs";
 import { faqJsonLd, jsonLd } from "@/lib/schema";
 
 export default function HomePage() {
@@ -14,7 +14,7 @@ export default function HomePage() {
       <DossierHero />
       <DossierEntries />
       <GoogleReviews />
-      <WhyHdf />
+      <WhyUs />
       <Faq />
       <Callback />
       <Contact />

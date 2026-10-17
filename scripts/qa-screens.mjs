@@ -1,5 +1,5 @@
 /**
- * Contrôle qualité visuel HDF Bâti.
+ * Contrôle qualité visuel WE CARE ÉNERGIE.
  *   node scripts/qa-screens.mjs [baseUrl] [outDir]
  *
  * Pour chaque largeur (375, 390, 430, 768, 1024, 1440) :
@@ -9,7 +9,7 @@
  * - cibles tactiles < 44 px (mobile) ;
  * - erreurs console / requêtes en échec ;
  * - images sans alt / logos déformés.
- * Sur l'accueil et les 3 pages profil, puis parcours complet de la fiche d'étude + formulaire de rappel.
+ * Sur l'accueil et les 3 pages profil, puis parcours complet de la fiche + formulaire de rappel.
  */
 import { chromium } from "playwright";
 import fs from "node:fs";
@@ -67,7 +67,7 @@ async function audit(page, width) {
     // Images
     for (const img of document.querySelectorAll("img")) {
       if (!img.hasAttribute("alt")) issues.push(`Image sans alt : ${img.src}`);
-      if (img.naturalWidth && img.src.includes("/brand/hdf-bati-logo")) {
+      if (img.naturalWidth && img.src.includes("/brand/we-care-energie-logo")) {
         const r = img.getBoundingClientRect();
         const ratioShown = r.width / r.height;
         const ratioNat = img.naturalWidth / img.naturalHeight;
@@ -115,7 +115,7 @@ for (const [width, path] of [[390, "/"], [390, "/particuliers"], [1440, "/partic
     if (m.type() === "error") errors.push(m.text());
     if (m.text().startsWith("[analytics]")) events.push(m.text().split(" ")[1]);
   });
-  await page.goto(`${BASE}${path}?utm_source=facebook&utm_campaign=pac_test`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}${path}?utm_source=facebook&utm_campaign=comparatif_test`, { waitUntil: "networkidle" });
   const tag = `${path === "/" ? "accueil" : "particuliers"}-${width}`;
   const sheet = page.locator("#etude");
   const pick = async (label) => {
@@ -124,28 +124,25 @@ for (const [width, path] of [[390, "/"], [390, "/particuliers"], [1440, "/partic
   };
   if (path === "/") await pick("Particulier : mon logement");
   await page.screenshot({ path: `${OUT}/${tag}-fiche-1.png` });
-  await pick("Pompe à chaleur");
-  await pick("Maison individuelle");
-  await pick("Propriétaire occupant");
-  await sheet.getByRole("textbox", { name: "Où se situe le logement ?" }).fill("59410");
+  await pick("Réduire ma facture d’électricité ou de gaz");
+  await pick("Électricité et gaz");
+  await pick("EDF");
+  await pick("De 120 à 200 €");
+  await pick("Maison");
+  await sheet.getByRole("textbox", { name: "Où se situe le logement ?" }).fill("75011");
   await sheet.getByRole("button", { name: "Continuer" }).click();
   await page.waitForTimeout(350);
-  await pick("Gaz");
   // « Modifier » une rubrique antérieure : seule sa réponse est reprise, les suivantes restent.
-  await sheet.getByRole("button", { name: "Modifier : Statut" }).click();
+  await sheet.getByRole("button", { name: "Modifier : Logement" }).click();
   await page.waitForTimeout(350);
-  await pick("Propriétaire bailleur");
-  const kept = await sheet.getByText("59410").count();
+  await pick("Appartement");
+  const kept = await sheet.getByText("75011").count();
   if (!kept) throw new Error("« Modifier » a effacé le code postal déjà saisi");
-  await sheet.getByRole("button", { name: "Modifier : Statut" }).click();
-  await page.waitForTimeout(350);
-  await pick("Propriétaire occupant");
-  await pick("Réduire mes dépenses d’énergie");
   await page.screenshot({ path: `${OUT}/${tag}-fiche-2.png` });
-  await pick("Dans les 3 mois");
-  await pick("Convenir d’un rendez-vous");
+  await pick("Être rappelé");
   await sheet.getByLabel("Nom et prénom").fill("Test QA");
   await sheet.getByLabel("Téléphone", { exact: true }).fill("06 12 34 56 78");
+  await sheet.getByLabel("Meilleur moment pour vous rappeler").selectOption("matin");
   await sheet.getByRole("checkbox").check();
   await page.screenshot({ path: `${OUT}/${tag}-fiche-3.png` });
   await sheet.getByRole("button", { name: "Envoyer ma fiche" }).click();
@@ -165,7 +162,7 @@ for (const [width, path] of [[390, "/"], [390, "/particuliers"], [1440, "/partic
   await page.waitForTimeout(600);
   await page.screenshot({ path: `${OUT}/${tag}-fiche-4.png` });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
-  if (relayText !== null && !/réf\. HDF-.*[\s\S]*Nom : Test QA[\s\S]*Téléphone : 06 12 34 56 78/.test(relayText)) errors.push("Texte du relais WhatsApp incomplet : " + relayText.slice(0, 120));
+  if (relayText !== null && !/réf\. WCE-.*[\s\S]*Nom : Test QA[\s\S]*Téléphone : 06 12 34 56 78/.test(relayText)) errors.push("Texte du relais WhatsApp incomplet : " + relayText.slice(0, 120));
   report.push({ width, flow: `fiche ${path}`, ok: true, relay: relayText !== null, events, errors, overflow });
   await context.close();
 }
@@ -194,15 +191,15 @@ for (const [width, path] of [[390, "/"], [390, "/particuliers"], [1440, "/partic
   await form.getByRole("checkbox").check();
   await form.getByRole("button", { name: "Demander un rappel" }).click();
   const cbRelay = page.getByRole("link", { name: "Envoyer ma demande sur WhatsApp" });
-  await Promise.race([cbRelay.waitFor({ timeout: 8000 }), page.getByText("Merci, HDF Bâti vous rappelle.").waitFor({ timeout: 8000 })]);
+  await Promise.race([cbRelay.waitFor({ timeout: 8000 }), page.getByText(/Merci, un conseiller vous rappelle/).waitFor({ timeout: 8000 })]);
   if (await cbRelay.isVisible()) {
     const popup = page.waitForEvent("popup").catch(() => null);
     await cbRelay.click();
     const p = await popup;
     if (p) await p.close();
   }
-  await page.getByText("Merci, HDF Bâti vous rappelle.").waitFor({ timeout: 8000 });
-  await page.getByText("Merci, HDF Bâti vous rappelle.").screenshot({ path: `${OUT}/375-callback-ok.png` });
+  await page.getByText(/Merci, un conseiller vous rappelle/).waitFor({ timeout: 8000 });
+  await page.getByText(/Merci, un conseiller vous rappelle/).screenshot({ path: `${OUT}/375-callback-ok.png` });
   report.push({ width: 375, flow: "callback", validationErrorsShown: errorCount, events, errors });
   await context.close();
 }

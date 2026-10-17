@@ -1,7 +1,7 @@
 import "server-only";
 
 /**
- * Avis Google de la fiche HDF Bâti, via l'API officielle Google Places (New).
+ * Avis Google de la fiche WE CARE ÉNERGIE, via l'API officielle Google Places (New).
  *
  *  GOOGLE_PLACES_API_KEY  clé API (Google Cloud → API « Places API (New) », clé restreinte à cette API)
  *  GOOGLE_PLACE_ID        identifiant de la fiche (outil « Place ID Finder » de Google)

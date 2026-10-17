@@ -1,14 +1,15 @@
-import type { Segment } from "./services";
+import { offers, offerShown, type Segment } from "./services";
 
 /**
- * Arbre conversationnel Jawabot HDF Bâti.
+ * Arbre conversationnel Jawabot WE CARE ÉNERGIE.
  *
  * Les questions sont de la configuration pure : le moteur (lib/jawabot/engine.ts)
  * et l'interface (components/jawabot) ne contiennent aucune question en dur.
  * Pour ajouter / retirer une question : modifier ce fichier uniquement.
  *
- * TODO_HDF_VALIDATION : arbre à relire avec Farid (questions des 3 premières minutes
- * d'appel, ton, vouvoiement, escalade humaine).
+ * Questions issues de la maquette B2C et de la réunion du 19/07/2026 (fournisseur actuel
+ * + « Autre », créneau de rappel). TODO_WCE_VALIDATION : arbre et liste des fournisseurs
+ * à relire avec Jamel MER.
  */
 
 export interface ChoiceOption {
@@ -24,7 +25,7 @@ interface BaseStep {
   help?: string;
   /** La question n'est posée que si la condition est vraie. */
   when?: (answers: Answers) => boolean;
-  /** Libellé court utilisé dans le récapitulatif et le résumé Farid. */
+  /** Libellé court utilisé dans le récapitulatif et le résumé du conseiller. */
   summaryLabel: string;
 }
 
@@ -58,19 +59,17 @@ export type Answers = Record<string, string>;
 
 export const jawabotCopy = {
   name: "Jawabot",
-  title: "HDF Bâti • Assistant",
-  launcher: "Parlez-nous de votre projet",
+  title: "WE CARE ÉNERGIE • Assistant",
+  launcher: "Comparer mes offres",
   greeting: "Bonjour,",
-  intro: "Je vais vous poser quelques questions pour mieux comprendre votre besoin.",
-  segmentQuestion: "Votre demande concerne :",
-  humanNote: "Un conseiller HDF Bâti reprend ensuite personnellement votre demande.",
+  intro: "Je vais vous poser quelques questions pour préparer votre comparatif.",
+  segmentQuestion: "Votre demande concerne :",
+  humanNote: "Un conseiller WE CARE ÉNERGIE reprend ensuite personnellement votre demande.",
   disclaimer:
-    "Cette fiche prépare votre demande : elle ne remplace ni une étude technique, ni un devis, et ne confirme aucune aide.",
+    "Cette fiche prépare votre demande : elle ne vaut ni offre ni engagement. WE CARE ÉNERGIE est un courtier rémunéré par les fournisseurs partenaires.",
   successTitle: "Merci, votre fiche est transmise.",
-  successText:
-    "HDF Bâti a reçu le résumé de votre projet et revient vers vous pour en parler.",
-  errorText:
-    "Votre demande n’a pas pu être envoyée. Réessayez dans un instant, ou contactez-nous directement au",
+  successText: "Un conseiller WE CARE ÉNERGIE a reçu votre fiche et vous rappelle sous 24 h.",
+  errorText: "Votre demande n’a pas pu être envoyée. Réessayez dans un instant",
 } as const;
 
 export const segmentChoices: { value: Segment; label: string }[] = [
@@ -83,41 +82,104 @@ const contactPreference: ChoiceStep = {
   id: "contact_preference",
   type: "choice",
   summaryLabel: "Suite souhaitée",
-  question: "Pour la suite, vous préférez :",
+  question: "Pour la suite, vous préférez :",
   options: [
     { value: "rappel", label: "Être rappelé" },
-    { value: "rdv", label: "Convenir d’un rendez-vous" },
+    { value: "email", label: "Recevoir le comparatif par e-mail" },
     { value: "whatsapp", label: "Échanger sur WhatsApp" },
   ],
 };
+
+/**
+ * Fournisseur actuel (décision du 19/07 : principaux fournisseurs + « Autre »).
+ * Liste des principaux fournisseurs du marché français, à ajuster avec Jamel MER.
+ */
+const fournisseurs: ChoiceOption[] = [
+  { value: "edf", label: "EDF" },
+  { value: "engie", label: "Engie" },
+  { value: "totalenergies", label: "TotalEnergies" },
+  { value: "eni", label: "Eni / Plenitude" },
+  { value: "ekwateur", label: "ekWateur" },
+  { value: "octopus", label: "Octopus Energy" },
+  { value: "mint", label: "Mint Énergie" },
+  { value: "vattenfall", label: "Vattenfall" },
+  { value: "autre", label: "Autre fournisseur" },
+  { value: "ne_sait_pas", label: "Je ne sais pas" },
+];
+
+const fournisseurAutre = (id: string, when: (a: Answers) => boolean): TextStep => ({
+  id: `${id}_autre`,
+  type: "text",
+  summaryLabel: "Autre fournisseur",
+  question: "Quel est votre fournisseur ?",
+  placeholder: "Nom du fournisseur",
+  maxLength: 80,
+  optional: true,
+  when,
+});
+
+/** Le comparatif de fournisseur concerne la demande (et pas seulement le photovoltaïque). */
+const wantsSupply = (a: Answers) => a.projet !== "photovoltaique" && a.projet !== "pac";
+const wantsInstall = (a: Answers) => a.projet === "photovoltaique" || a.projet === "pac" || a.projet === "plusieurs";
 
 const flows: Record<Segment, Step[]> = {
   particulier: [
     {
       id: "projet",
       type: "choice",
-      summaryLabel: "Projet",
-      question: "Quel est votre projet ?",
+      summaryLabel: "Demande",
+      question: "Que souhaitez-vous ?",
       options: [
-        { value: "pac", label: "Pompe à chaleur" },
-        { value: "photovoltaique", label: "Panneaux photovoltaïques" },
-        { value: "renovation", label: "Rénovation énergétique" },
-        { value: "ne_sait_pas", label: "Je ne sais pas encore" },
+        { value: "facture", label: "Réduire ma facture d’électricité ou de gaz" },
+        { value: "photovoltaique", label: "Installer des panneaux photovoltaïques" },
+        ...(offerShown(offers.pac) ? [{ value: "pac", label: "Installer une pompe à chaleur" }] : []),
+        { value: "plusieurs", label: "Plusieurs de ces sujets" },
+      ],
+    },
+    {
+      id: "energie",
+      type: "choice",
+      summaryLabel: "Énergie",
+      question: "Quelle énergie utilisez-vous ?",
+      when: wantsSupply,
+      options: [
+        { value: "electricite", label: "Électricité" },
+        { value: "gaz", label: "Gaz" },
+        { value: "les_deux", label: "Électricité et gaz" },
+      ],
+    },
+    {
+      id: "fournisseur",
+      type: "choice",
+      summaryLabel: "Fournisseur actuel",
+      question: "Quel est votre fournisseur actuel ?",
+      help: "Il figure en haut de votre facture.",
+      when: wantsSupply,
+      options: fournisseurs,
+    },
+    fournisseurAutre("fournisseur", (a) => wantsSupply(a) && a.fournisseur === "autre"),
+    {
+      id: "facture",
+      type: "choice",
+      summaryLabel: "Facture mensuelle",
+      question: "Combien payez-vous par mois, environ ?",
+      help: "Électricité et gaz confondus. Une estimation suffit.",
+      options: [
+        { value: "moins_60", label: "Moins de 60 €" },
+        { value: "60_120", label: "De 60 à 120 €" },
+        { value: "120_200", label: "De 120 à 200 €" },
+        { value: "plus_200", label: "Plus de 200 €" },
+        { value: "ne_sait_pas", label: "Je ne sais pas" },
       ],
     },
     {
       id: "logement",
       type: "choice",
       summaryLabel: "Logement",
-      question: "Quel type de logement ?",
+      question: "Quel type de logement ?",
       options: [
-        { value: "maison", label: "Maison individuelle" },
-        {
-          value: "appartement",
-          label: "Appartement",
-          reply:
-            "Nos projets de pompe à chaleur concernent aujourd’hui les maisons individuelles. Continuons : nous vous dirons honnêtement si nous pouvons vous aider.",
-        },
+        { value: "maison", label: "Maison" },
+        { value: "appartement", label: "Appartement" },
         { value: "autre", label: "Autre" },
       ],
     },
@@ -125,14 +187,14 @@ const flows: Record<Segment, Step[]> = {
       id: "statut",
       type: "choice",
       summaryLabel: "Statut",
-      question: "Vous êtes :",
+      question: "Vous êtes :",
+      when: wantsInstall,
       options: [
-        { value: "proprietaire_occupant", label: "Propriétaire occupant" },
-        { value: "proprietaire_bailleur", label: "Propriétaire bailleur" },
+        { value: "proprietaire", label: "Propriétaire" },
         {
           value: "locataire",
           label: "Locataire",
-          reply: "Nos projets de pompe à chaleur sont aussi ouverts aux locataires : nous voyons avec vous les conditions lors de l’échange.",
+          reply: "Une installation sur le logement demande l’accord du propriétaire : nous en parlerons lors de l’échange. Le comparatif d’offres, lui, vous concerne directement.",
         },
       ],
     },
@@ -140,53 +202,15 @@ const flows: Record<Segment, Step[]> = {
       id: "code_postal",
       type: "postal",
       summaryLabel: "Code postal",
-      question: "Où se situe le logement ?",
-      help: "Le code postal suffit.",
-    },
-    {
-      id: "chauffage",
-      type: "choice",
-      summaryLabel: "Chauffage actuel",
-      question: "Comment le logement est-il chauffé aujourd’hui ?",
-      options: [
-        { value: "gaz", label: "Gaz" },
-        { value: "fioul", label: "Fioul" },
-        { value: "electrique", label: "Électrique" },
-        { value: "bois", label: "Bois / granulés" },
-        { value: "pac", label: "Pompe à chaleur" },
-        { value: "autre", label: "Autre / je ne sais pas" },
-      ],
-    },
-    {
-      id: "besoin",
-      type: "choice",
-      summaryLabel: "Besoin principal",
-      question: "Qu’attendez-vous en priorité ?",
-      options: [
-        { value: "factures", label: "Réduire mes dépenses d’énergie" },
-        { value: "remplacement", label: "Remplacer un équipement ancien" },
-        { value: "confort", label: "Gagner en confort" },
-        { value: "aides", label: "Savoir à quelles aides je peux prétendre" },
-      ],
-    },
-    {
-      id: "delai",
-      type: "choice",
-      summaryLabel: "Délai",
-      question: "Quand souhaitez-vous réaliser le projet ?",
-      options: [
-        { value: "moins_3_mois", label: "Dans les 3 mois" },
-        { value: "3_6_mois", label: "D’ici 3 à 6 mois" },
-        { value: "plus_6_mois", label: "Dans plus de 6 mois" },
-        { value: "renseigne", label: "Je me renseigne" },
-      ],
+      question: "Où se situe le logement ?",
+      help: "Le code postal suffit : les offres peuvent varier selon la zone.",
     },
     contactPreference,
     {
       id: "contact",
       type: "contact",
       summaryLabel: "Coordonnées",
-      question: "Dernière étape : comment pouvons-nous vous joindre ?",
+      question: "Dernière étape : comment pouvons-nous vous joindre ?",
     },
   ],
 
@@ -195,20 +219,18 @@ const flows: Record<Segment, Step[]> = {
       id: "besoin",
       type: "choice",
       summaryLabel: "Besoin",
-      question: "Quel est votre besoin principal ?",
+      question: "Quel est votre besoin principal ?",
       options: [
-        { value: "contrats", label: "Mes contrats d’énergie" },
-        { value: "pac", label: "Pompe à chaleur / chauffage" },
-        { value: "photovoltaique", label: "Photovoltaïque" },
-        { value: "performance", label: "Performance du bâtiment" },
-        { value: "plusieurs", label: "Plusieurs de ces sujets" },
+        { value: "contrats", label: "Mes contrats d’électricité et de gaz" },
+        { value: "photovoltaique", label: "Photovoltaïque sur mes bâtiments" },
+        { value: "plusieurs", label: "Les deux" },
       ],
     },
     {
       id: "societe",
       type: "text",
       summaryLabel: "Société",
-      question: "Quel est le nom de votre société ?",
+      question: "Quel est le nom de votre société ?",
       placeholder: "Nom de l’entreprise",
       autoComplete: "organization",
       maxLength: 120,
@@ -217,7 +239,7 @@ const flows: Record<Segment, Step[]> = {
       id: "secteur",
       type: "choice",
       summaryLabel: "Secteur",
-      question: "Dans quel secteur ?",
+      question: "Dans quel secteur ?",
       options: [
         { value: "commerce", label: "Commerce / restauration" },
         { value: "tertiaire", label: "Bureaux / services" },
@@ -228,40 +250,45 @@ const flows: Record<Segment, Step[]> = {
       ],
     },
     {
-      id: "batiment",
-      type: "choice",
-      summaryLabel: "Bâtiment",
-      question: "Quelle surface de bâtiment est concernée ?",
-      options: [
-        { value: "moins_500", label: "Moins de 500 m²" },
-        { value: "500_2000", label: "500 à 2 000 m²" },
-        { value: "plus_2000", label: "Plus de 2 000 m²" },
-        { value: "plusieurs_sites", label: "Plusieurs sites" },
-        { value: "ne_sait_pas", label: "Je ne sais pas" },
-      ],
-    },
-    {
       id: "energie",
       type: "choice",
       summaryLabel: "Énergies",
-      question: "Quelles énergies utilisez-vous ?",
+      question: "Quelles énergies utilisez-vous ?",
       options: [
         { value: "electricite", label: "Électricité" },
         { value: "gaz", label: "Gaz" },
         { value: "les_deux", label: "Électricité et gaz" },
-        { value: "autre", label: "Autre / je ne sais pas" },
+      ],
+    },
+    {
+      id: "fournisseur",
+      type: "choice",
+      summaryLabel: "Fournisseur actuel",
+      question: "Quel est votre fournisseur actuel ?",
+      options: fournisseurs,
+    },
+    fournisseurAutre("fournisseur", (a) => a.fournisseur === "autre"),
+    {
+      id: "sites",
+      type: "choice",
+      summaryLabel: "Sites",
+      question: "Combien de sites sont concernés ?",
+      options: [
+        { value: "un", label: "Un seul" },
+        { value: "deux_cinq", label: "De 2 à 5" },
+        { value: "plus_cinq", label: "Plus de 5" },
       ],
     },
     {
       id: "echeance",
       type: "choice",
       summaryLabel: "Échéance",
-      question: "Quelle est votre échéance (fin de contrat ou projet) ?",
+      question: "Quand se termine votre contrat actuel ?",
       options: [
-        { value: "moins_3_mois", label: "Moins de 3 mois" },
-        { value: "3_6_mois", label: "3 à 6 mois" },
-        { value: "6_12_mois", label: "6 à 12 mois" },
-        { value: "plus_12_mois", label: "Plus de 12 mois" },
+        { value: "moins_3_mois", label: "Dans moins de 3 mois" },
+        { value: "3_6_mois", label: "Dans 3 à 6 mois" },
+        { value: "6_12_mois", label: "Dans 6 à 12 mois" },
+        { value: "plus_12_mois", label: "Dans plus de 12 mois" },
         { value: "inconnue", label: "Je ne sais pas" },
       ],
     },
@@ -269,7 +296,7 @@ const flows: Record<Segment, Step[]> = {
       id: "interlocuteur",
       type: "choice",
       summaryLabel: "Interlocuteur",
-      question: "Vous êtes :",
+      question: "Vous êtes :",
       options: [
         { value: "dirigeant", label: "Dirigeant(e)" },
         { value: "responsable", label: "Responsable technique / services généraux" },
@@ -281,7 +308,7 @@ const flows: Record<Segment, Step[]> = {
       id: "code_postal",
       type: "postal",
       summaryLabel: "Code postal",
-      question: "Où se situe le site concerné ?",
+      question: "Où se situe le site principal ?",
       help: "Code postal du site principal.",
     },
     contactPreference,
@@ -289,7 +316,7 @@ const flows: Record<Segment, Step[]> = {
       id: "contact",
       type: "contact",
       summaryLabel: "Coordonnées",
-      question: "Comment pouvons-nous vous joindre ?",
+      question: "Comment pouvons-nous vous joindre ?",
       askRole: true,
     },
   ],
@@ -299,7 +326,7 @@ const flows: Record<Segment, Step[]> = {
       id: "structure",
       type: "choice",
       summaryLabel: "Structure",
-      question: "Quel type de structure ?",
+      question: "Quel type de structure ?",
       options: [
         { value: "commune", label: "Commune" },
         { value: "intercommunalite", label: "Intercommunalité" },
@@ -313,28 +340,16 @@ const flows: Record<Segment, Step[]> = {
       id: "nom_structure",
       type: "text",
       summaryLabel: "Nom de la structure",
-      question: "Quel est le nom de votre structure ?",
-      placeholder: "Ex. : Mairie de…",
+      question: "Quel est le nom de votre structure ?",
+      placeholder: "Ex. : Mairie de…",
       autoComplete: "organization",
       maxLength: 120,
-    },
-    {
-      id: "besoin",
-      type: "choice",
-      summaryLabel: "Besoin",
-      question: "Sur quel sujet souhaitez-vous être accompagné ?",
-      options: [
-        { value: "contrats", label: "Contrats d’énergie" },
-        { value: "pac", label: "Chauffage / pompe à chaleur" },
-        { value: "photovoltaique", label: "Photovoltaïque" },
-        { value: "global", label: "Accompagnement global" },
-      ],
     },
     {
       id: "contrats",
       type: "choice",
       summaryLabel: "Contrats",
-      question: "Quels contrats sont concernés ?",
+      question: "Quels contrats sont concernés ?",
       options: [
         { value: "electricite", label: "Électricité" },
         { value: "gaz", label: "Gaz" },
@@ -346,7 +361,7 @@ const flows: Record<Segment, Step[]> = {
       id: "echeance",
       type: "choice",
       summaryLabel: "Échéance",
-      question: "Quelle est la prochaine échéance ?",
+      question: "Quelle est la prochaine échéance ?",
       options: [
         { value: "moins_6_mois", label: "Moins de 6 mois" },
         { value: "6_12_mois", label: "6 à 12 mois" },
@@ -358,9 +373,9 @@ const flows: Record<Segment, Step[]> = {
       id: "volumes",
       type: "text",
       summaryLabel: "Volumes",
-      question: "Si vous les connaissez : nombre de sites ou consommation annuelle ?",
+      question: "Si vous les connaissez : nombre de sites ou consommation annuelle ?",
       help: "Facultatif — une estimation suffit.",
-      placeholder: "Ex. : 12 bâtiments, environ 400 MWh/an",
+      placeholder: "Ex. : 12 bâtiments, environ 400 MWh/an",
       optional: true,
       maxLength: 200,
     },
@@ -368,14 +383,14 @@ const flows: Record<Segment, Step[]> = {
       id: "code_postal",
       type: "postal",
       summaryLabel: "Code postal",
-      question: "Code postal de la structure ?",
+      question: "Code postal de la structure ?",
     },
     contactPreference,
     {
       id: "contact",
       type: "contact",
       summaryLabel: "Interlocuteur",
-      question: "Qui est l’interlocuteur pour ce dossier ?",
+      question: "Qui est l’interlocuteur pour ce dossier ?",
       askRole: true,
     },
   ],
@@ -385,7 +400,7 @@ export function getFlow(segment: Segment): Step[] {
   return flows[segment];
 }
 
-/** Libellé lisible d'une réponse (pour le récapitulatif et le résumé Farid). */
+/** Libellé lisible d'une réponse (pour le récapitulatif et le résumé du conseiller). */
 export function answerLabel(step: Step, value: string | undefined): string {
   if (!value) return "—";
   if (step.type === "choice") return step.options.find((o) => o.value === value)?.label ?? value;

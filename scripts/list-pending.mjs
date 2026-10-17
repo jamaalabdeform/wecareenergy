@@ -1,13 +1,13 @@
 /**
  * Recense tous les contenus à valider dans le code.
  *   npm run check:content
- * Cherche : pending(...), status: "pending_validation", TODO_HDF_VALIDATION, provisional_ai.
+ * Cherche : pending(...), status: "pending_validation", TODO_WCE_VALIDATION, provisional_ai.
  */
 import fs from "node:fs";
 import path from "node:path";
 
 const ROOTS = ["config", "lib", "components", "app"];
-const PATTERNS = [/\bpending(<[^>]*>)?\(/, /pending_validation/, /TODO_HDF_VALIDATION/, /status: "provisional_ai"/];
+const PATTERNS = [/\bpending(<[^>]*>)?\(/, /pending_validation/, /TODO_WCE_VALIDATION/, /status: "provisional_ai"/];
 const hits = [];
 
 function walk(dir) {
@@ -27,5 +27,5 @@ function walk(dir) {
 }
 
 ROOTS.forEach((r) => fs.existsSync(r) && walk(r));
-console.log(`${hits.length} élément(s) à valider (voir aussi HDF_CONTENT_TO_VALIDATE.md)\n`);
+console.log(`${hits.length} élément(s) à valider (voir aussi WCE_CONTENT_TO_VALIDATE.md)\n`);
 console.log(hits.join("\n"));

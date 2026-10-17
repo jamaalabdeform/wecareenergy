@@ -1,4 +1,4 @@
-import { company } from "@/config/company";
+import { company, fullAddress, hasPhone } from "@/config/company";
 import { faqFor } from "@/config/faq";
 import type { Segment } from "@/config/services";
 import { seo, siteUrl } from "@/config/site";
@@ -6,44 +6,44 @@ import { publicValue } from "@/config/validation";
 
 /**
  * Données structurées schema.org.
- * - HomeAndConstructionBusiness (sous-type de LocalBusiness) : l'entreprise dispose d'une
- *   adresse réelle. TODO_HDF_VALIDATION : confirmer que le siège est l'adresse publique.
- * - Aucune note / aucun avis n'est déclaré tant qu'ils ne sont pas vérifiables.
+ * - Organization (pas de LocalBusiness) : WE CARE ÉNERGIE travaille à distance, partout en France.
+ * - Seules les informations confirmées sont déclarées ; aucune note / aucun avis tant qu'ils ne
+ *   sont pas vérifiables. TODO_WCE_VALIDATION : SIREN, adresse, téléphone, e-mail.
  */
 export function businessJsonLd() {
-  const geo = publicValue(company.geo);
   const sameAs = Object.values(company.social).map(publicValue).filter(Boolean);
   const gbp = publicValue(company.googleBusiness.url);
   if (gbp) sameAs.push(gbp);
+  const siren = publicValue(company.legal.siren);
   return {
     "@context": "https://schema.org",
-    "@type": "HomeAndConstructionBusiness",
+    "@type": "Organization",
     "@id": `${siteUrl}/#entreprise`,
     name: company.name,
-    legalName: company.legal.denomination.value,
+    legalName: publicValue(company.legal.denomination) ?? undefined,
     description: seo.description,
     slogan: company.tagline,
     url: siteUrl,
-    logo: `${siteUrl}/brand/hdf-bati-logo.svg`,
+    logo: `${siteUrl}/brand/we-care-energie-logo.png`,
     image: `${siteUrl}${seo.ogImage}`,
-    telephone: company.phone.e164,
-    email: company.email,
+    ...(hasPhone ? { telephone: company.phone.e164 } : {}),
+    ...(company.email.status === "confirmed" ? { email: company.email.value } : {}),
     foundingDate: publicValue(company.foundingDate) ?? undefined,
-    identifier: { "@type": "PropertyValue", propertyID: "SIREN", value: company.legal.siren.value },
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: company.address.street,
-      postalCode: company.address.postalCode,
-      addressLocality: company.address.city,
-      addressRegion: company.address.region,
-      addressCountry: company.address.country,
-    },
-    ...(geo ? { geo: { "@type": "GeoCoordinates", latitude: geo.lat, longitude: geo.lng } } : {}),
-    areaServed: [
-      { "@type": "AdministrativeArea", name: "Hauts-de-France" },
-      { "@type": "Country", name: "France" },
-    ],
-    knowsAbout: ["Pompe à chaleur", "Rénovation énergétique", "Photovoltaïque", "Courtage en énergie"],
+    ...(siren ? { identifier: { "@type": "PropertyValue", propertyID: "SIREN", value: siren } } : {}),
+    ...(company.address.publicDisplay.value && fullAddress
+      ? {
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: company.address.street.value,
+            postalCode: company.address.postalCode.value,
+            addressLocality: company.address.city.value,
+            addressCountry: company.address.country,
+          },
+        }
+      : {}),
+    founder: { "@type": "Person", name: company.legal.president.value },
+    areaServed: { "@type": "Country", name: "France" },
+    knowsAbout: ["Courtage en énergie", "Contrats d’électricité", "Contrats de gaz", "Photovoltaïque"],
     ...(sameAs.length ? { sameAs } : {}),
   };
 }

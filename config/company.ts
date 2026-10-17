@@ -1,112 +1,112 @@
 import { confirmed, pending, type Validated } from "./validation";
 
 /**
- * Source unique de vérité pour l'identité et les coordonnées HDF Bâti (NAP).
+ * Source unique de vérité pour l'identité et les coordonnées WE CARE ÉNERGIE (NAP).
  * Ne jamais recopier ces informations ailleurs dans le code : importer `company`.
+ *
+ * TODO_WCE_VALIDATION : SIREN, adresse, téléphone, WhatsApp et e-mail restent à obtenir
+ * (voir WCE_CONTENT_TO_VALIDATE.md). Tant qu'ils manquent, le site ne les affiche pas.
  */
 
-const SRC_BRIEF = "Brief landing HDF Bâti + carte de visite Farid (UI Kit V2)";
-const SRC_LEGAL = "Fiche légale publique — questionnaire Farid V3 prérempli (27/09/2026)";
+const SRC_CONTRAT = "Contrat de prestation STIPway × WE CARE ÉNERGIE (juillet 2026)";
+const SRC_PUB = "Logo et visuel publicitaire fournis par le client (2026)";
+const SRC_REUNION = "Réunion avec Jamel MER, 19/07/2026";
+
 function socialUrl(url: string, note: string): Validated<string> {
-  return url ? confirmed(url, "Compte créé par l’équipe HDF Bâti") : pending<string>(note);
+  return url ? confirmed(url, "Compte fourni par le client") : pending<string>(note);
 }
 
-const SRC_FARID = "Réponses de Farid — questionnaire V3 (RDV du 27/09/2026)";
+/** Téléphone : variable d'environnement, sinon vide (aucun lien d'appel n'est alors rendu). */
+const phoneE164 = (process.env.NEXT_PUBLIC_PHONE_E164 ?? "").replace(/[^\d+]/g, "");
 
 export const company = {
-  name: "HDF Bâti",
-  /** Graphie du logo, en capitales. Le mot BÂTI ne comporte aucun espace. */
-  brandUpper: "HDF BÂTI",
-  tagline: "Votre expert en rénovation énergétique",
+  name: "WE CARE ÉNERGIE",
+  /** Graphie du logo, en capitales, avec l'accent sur le É. */
+  brandUpper: "WE CARE ÉNERGIE",
+  tagline: "Courtier en énergie : électricité, gaz et photovoltaïque",
 
   legal: {
-    denomination: confirmed("HDF BATI", SRC_LEGAL),
-    form: confirmed("SAS — Société par actions simplifiée", SRC_LEGAL),
-    capital: confirmed("500 €", SRC_LEGAL),
-    siren: confirmed("925 387 680", SRC_LEGAL),
-    siret: confirmed("925 387 680 00018", SRC_LEGAL),
-    rcs: confirmed("RCS Valenciennes", SRC_LEGAL),
-    ape: confirmed("4399C", SRC_LEGAL),
-    president: confirmed("Kaled OMAYR", SRC_LEGAL),
-    directeurGeneral: confirmed("Farid MEDJAHED", SRC_LEGAL),
-    vat: pending<string>("N° TVA intracommunautaire à confirmer sur document fiscal", "FR63 925387680"),
-    publicationDirector: pending<string>("Directeur de la publication du site (Président ou DG ?)"),
+    denomination: pending<string>("Dénomination exacte (extrait Kbis / annuaire-entreprises.data.gouv.fr)"),
+    form: pending<string>("Forme juridique (SAS ? — le contrat mentionne un Président)"),
+    capital: pending<string>("Capital social"),
+    siren: pending<string>("SIREN"),
+    siret: pending<string>("SIRET du siège"),
+    rcs: pending<string>("Ville du RCS"),
+    ape: pending<string>("Code APE"),
+    president: confirmed("Jamel MER", SRC_CONTRAT),
+    vat: pending<string>("N° TVA intracommunautaire"),
+    publicationDirector: confirmed("Jamel MER, Président", SRC_CONTRAT),
     host: pending<string>("Hébergeur définitif (nom, adresse, téléphone) — dépend du choix Vercel / autre"),
   },
 
   address: {
-    street: "209 avenue Anatole France",
-    postalCode: "59410",
-    city: "Anzin",
-    region: "Hauts-de-France",
-    department: "Nord",
+    street: pending<string>("Adresse du siège (« à compléter » dans le contrat)"),
+    postalCode: pending<string>("Code postal du siège"),
+    city: pending<string>("Ville du siège"),
     country: "FR",
-    /** Affichage public du siège confirmé par Farid le 15/10/2026. */
-    publicDisplay: confirmed(true, "Farid, 15/10/2026"),
+    publicDisplay: pending<boolean>("Le client accepte-t-il d'afficher l'adresse du siège sur le site ?"),
   },
 
   phone: {
-    display: "06 01 45 11 10",
-    e164: "+33601451110",
-    source: SRC_BRIEF,
+    e164: phoneE164,
+    display: phoneE164 ? ("0" + phoneE164.replace(/^\+33/, "")).replace(/(\d{2})(?=\d)/g, "$1 ") : "",
+    status: phoneE164
+      ? confirmed(true, "Variable NEXT_PUBLIC_PHONE_E164")
+      : pending<boolean>("Numéro affiché — c'est aussi le numéro qui rappelle le client (décision du 19/07 : l'annoncer pour qu'il décroche)"),
   },
 
-  // Adresse sur le domaine hdf-bati.fr (remplace l’ancienne adresse Gmail, 17/10/2026).
-  email: "contact@hdf-bati.fr",
+  email: pending<string>("Adresse de contact sur le domaine (ex. contact@wecareenergie.fr)"),
 
-  /** Numéro WhatsApp qui reçoit les prospects (Farid + associé selon le questionnaire). */
+  /** Numéro WhatsApp qui reçoit les demandes (surchargeable via NEXT_PUBLIC_WHATSAPP_NUMBER). */
   whatsapp: {
-    number: confirmed("33601451110", "Farid, 15/10/2026 — même numéro que le mobile (surchargeable via NEXT_PUBLIC_WHATSAPP_NUMBER)"),
+    number: pending<string>("Numéro WhatsApp qui reçoit les demandes"),
   },
 
+  serviceArea: confirmed("Partout en France", "Proposition d'accompagnement STIPway (juillet 2026) — « ciblage national »"),
 
-  serviceArea: confirmed(
-    "Hauts-de-France, et partout en France selon le projet",
-    `${SRC_FARID} — « HDF et toute la France »`,
-  ),
-
-  openingHours: confirmed("7 jours sur 7, y compris le soir et le week-end", "Farid, 15/10/2026"),
-  responseTime: confirmed("Réponse dans l’heure", "Farid, 06/10/2026"),
-
-  geo: pending<{ lat: number; lng: number }>("Coordonnées GPS exactes de la fiche Google Business"),
+  openingHours: pending<string>("Jours et horaires de rappel"),
+  responseTime: confirmed("Réponse sous 24 h", SRC_PUB),
 
   googleBusiness: {
     url: process.env.NEXT_PUBLIC_GOOGLE_BUSINESS_URL
       ? confirmed(process.env.NEXT_PUBLIC_GOOGLE_BUSINESS_URL, "Variable NEXT_PUBLIC_GOOGLE_BUSINESS_URL")
-      : confirmed("https://maps.app.goo.gl/xBE36dihMVkMGd6NA", "Farid, 15/10/2026 — lien de partage Google Maps"),
-    reviewsCount: pending<number>(
-      "14 avis déclarés au 27/09/2026 ; note moyenne non communiquée. Afficher uniquement via widget/lien vérifiable.",
-      14,
-    ),
+      : pending<string>("Lien de la fiche Google Business (s'il y en a une)"),
+    reviewsCount: pending<number>("Nombre d'avis et note moyenne vérifiables"),
   },
 
-  /**
-   * Réseaux sociaux : coller l'URL du compte ici (à la place de "") ou dans la variable
-   * d'environnement indiquée. Tant qu'une URL manque, l'icône renvoie vers l'accueil du réseau.
-   */
+  /** Réseaux sociaux : URL du compte dans la variable d'environnement indiquée. */
   social: {
-    facebook: socialUrl(process.env.NEXT_PUBLIC_FACEBOOK_URL || "", "URL de la page Facebook HDF Bâti"),
-    instagram: socialUrl(process.env.NEXT_PUBLIC_INSTAGRAM_URL || "", "URL du compte Instagram HDF Bâti"),
-    linkedin: socialUrl(process.env.NEXT_PUBLIC_LINKEDIN_URL || "", "URL de la page LinkedIn HDF Bâti"),
+    facebook: socialUrl(process.env.NEXT_PUBLIC_FACEBOOK_URL || "", "URL de la page Facebook WE CARE ÉNERGIE"),
+    instagram: socialUrl(process.env.NEXT_PUBLIC_INSTAGRAM_URL || "", "URL du compte Instagram WE CARE ÉNERGIE"),
+    linkedin: socialUrl(process.env.NEXT_PUBLIC_LINKEDIN_URL || "", "URL de la page LinkedIn WE CARE ÉNERGIE"),
   } satisfies Record<string, Validated<string>>,
 
-  foundingDate: confirmed("2024-04-05", SRC_LEGAL),
+  foundingDate: pending<string>("Date d'immatriculation"),
+
+  /** Statut et rémunération : la transparence est une décision de conception (maquette B2C, 19/07). */
+  brokerNotice: confirmed(
+    "WE CARE ÉNERGIE est un courtier indépendant : nous sommes rémunérés par les fournisseurs partenaires lorsqu’un contrat est signé grâce à notre mise en relation. La comparaison et l’accompagnement ne vous sont pas facturés.",
+    `${SRC_REUNION} ; maquette de landing B2C`,
+  ),
 } as const;
 
-export const fullAddress = `${company.address.street}, ${company.address.postalCode} ${company.address.city}`;
+export const hasPhone = company.phone.e164 !== "";
+
+export const fullAddress =
+  company.address.street.value && company.address.postalCode.value && company.address.city.value
+    ? `${company.address.street.value}, ${company.address.postalCode.value} ${company.address.city.value}`
+    : null;
 
 export const telHref = `tel:${company.phone.e164}`;
-export const mailHref = `mailto:${company.email}`;
+export const mailHref = company.email.value ? `mailto:${company.email.value}` : null;
 
-export const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-  `${company.name} ${fullAddress}`,
-)}`;
-
-/** Numéro WhatsApp effectif (variable d'environnement prioritaire). */
+/** Numéro WhatsApp effectif (variable d'environnement prioritaire). Vide si inconnu. */
 export function whatsappNumber(): string {
   const env = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, "");
   return env || company.whatsapp.number.value || company.phone.e164.replace(/\D/g, "");
 }
+
+export const hasWhatsapp = whatsappNumber() !== "";
 
 export function whatsappHref(message: string): string {
   return `https://wa.me/${whatsappNumber()}?text=${encodeURIComponent(message)}`;

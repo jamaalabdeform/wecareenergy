@@ -1,24 +1,23 @@
 import { confirmed } from "./validation";
 
 /**
- * Les deux différences de HDF Bâti (PRODUCT.md).
- * Précisions confirmées par Farid le 06/10/2026 : « Réponse dans l’heure »,
- * « Aucune avance de frais », « Accompagnement complet dans les démarches ».
- * Le bloc Aides reste soumis à relecture juridique (HDF_CONTENT_TO_VALIDATE.md § 1, point 7).
+ * Les deux engagements de WE CARE ÉNERGIE (PRODUCT.md), repris du visuel publicitaire
+ * validé par le client : « Sans engagement », « Réponse sous 24 h », « On gère tout ».
+ * L'allégation « jusqu'à -30 % » n'est volontairement PAS reprise (non étayée, risque DGCCRF).
  */
 export const positioning = {
   reactivite: {
-    short: "Réponse dans l’heure",
-    title: "Une réponse dans l’heure",
-    heroText: "7 jours sur 7, soir et week-end compris, par l’équipe HDF Bâti elle-même.",
-    text: "Vous laissez vos coordonnées : l’équipe HDF Bâti vous répond elle-même, dans l’heure, 7 jours sur 7. Pas de centre d’appels.",
-    precise: confirmed("Réponse dans l’heure", "Farid, 06/10/2026"),
+    short: "Réponse sous 24 h",
+    title: "Un conseiller vous rappelle sous 24 h",
+    heroText: "Au moment que vous choisissez, avec un comparatif établi à partir de votre situation.",
+    text: "Vous laissez vos coordonnées : un conseiller WE CARE ÉNERGIE vous rappelle sous 24 h, au créneau que vous avez choisi, avec vos réponses sous les yeux.",
+    precise: confirmed("Réponse sous 24 h", "Visuel publicitaire validé par le client"),
   },
-  aides: {
-    short: "Aucune avance de frais, démarches d’aides prises en charge",
-    title: "Aucune avance de frais",
-    heroText: "Nous vous accompagnons dans toutes les démarches d’aides, sans avance de frais de votre part. Selon conditions d’éligibilité.",
-    text: "Nous identifions les dispositifs applicables à votre projet et vous accompagnons dans toutes les démarches, sans avance de frais de votre part. Selon conditions d’éligibilité.",
-    precise: confirmed("Aucune avance de frais · accompagnement complet dans les démarches", "Farid, 06/10/2026"),
+  gestion: {
+    short: "Sans engagement, on gère tout",
+    title: "Sans engagement, on gère tout",
+    heroText: "Si l’offre vous convient, nous nous occupons des démarches. Le changement de fournisseur se fait sans coupure.",
+    text: "Si l’offre vous convient, nous nous occupons des démarches avec le fournisseur. Changer de fournisseur ne coupe jamais votre électricité ni votre gaz : seul le contrat change, le réseau reste le même.",
+    precise: confirmed("Sans engagement · On gère tout", "Visuel publicitaire validé par le client"),
   },
 } as const;

@@ -4,17 +4,17 @@ import { confirmed } from "./validation";
  * Paramètres du site. L'URL publique vient de NEXT_PUBLIC_SITE_URL
  * (canonical, sitemap, OpenGraph, schema.org).
  */
-export const siteDomain = confirmed("hdf-bati.fr", "Site en ligne sur https://www.hdf-bati.fr/ (17/10/2026)");
+export const siteDomain = confirmed("wecareenergie.fr", "Domaine affiché sur le visuel publicitaire du client");
 
-// Adresse canonique : www.hdf-bati.fr (NEXT_PUBLIC_SITE_URL reste prioritaire, ex. en développement).
-export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.hdf-bati.fr").replace(/\/$/, "");
+// NEXT_PUBLIC_SITE_URL reste prioritaire (préproduction, développement).
+export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.wecareenergie.fr").replace(/\/$/, "");
 
 export const seo = {
-  title: "HDF Bâti — Pompe à chaleur, rénovation énergétique et courtage en énergie | Anzin (Nord)",
-  titleTemplate: "%s | HDF Bâti",
+  title: "WE CARE ÉNERGIE — Courtier en électricité, gaz et photovoltaïque",
+  titleTemplate: "%s | WE CARE ÉNERGIE",
   description:
-    "HDF Bâti, basée à Anzin (Nord) : pompes à chaleur et rénovation énergétique pour les particuliers, solutions énergétiques pour les professionnels et optimisation des contrats d'énergie pour les entreprises et collectivités.",
-  ogImage: "/og-hdf-bati.jpg",
+    "WE CARE ÉNERGIE, courtier indépendant : un conseiller compare les offres d’électricité et de gaz pour votre logement ou votre entreprise, et vous accompagne sur vos projets photovoltaïques. Sans engagement, partout en France.",
+  ogImage: "/og-we-care-energie.jpg",
   locale: "fr_FR",
-  themeColor: "#083D2E",
+  themeColor: "#0C2C47",
 } as const;

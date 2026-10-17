@@ -9,9 +9,9 @@ import { sendWhatsappLead, whatsappConfigured } from "./whatsapp";
  *
  *  CRM_WEBHOOK_URL            → POST JSON du lead complet (CRM, Make, n8n, Zapier, HubSpot…)
  *  WHATSAPP_TOKEN + WHATSAPP_PHONE_NUMBER_ID + WHATSAPP_NOTIFY_TO
- *                             → alerte WhatsApp DIRECTE à Farid (API officielle Meta, voir whatsapp.ts)
+ *                             → alerte WhatsApp DIRECTE au conseiller (API officielle Meta, voir whatsapp.ts)
  *  LEAD_NOTIFY_WEBHOOK_URL    → POST JSON { text, lead } vers Make / n8n (alternative ou complément)
- *  LEAD_WEBHOOK_SECRET        → envoyé dans l'en-tête X-HDF-Signature (HMAC simple)
+ *  LEAD_WEBHOOK_SECRET        → envoyé dans l'en-tête X-WCE-Signature (HMAC simple)
  *  META_PIXEL_ID + META_CAPI_TOKEN → Meta Conversions API (événement Lead dédupliqué)
  */
 
@@ -19,7 +19,7 @@ async function postJson(url: string, body: unknown): Promise<boolean> {
   const payload = JSON.stringify(body);
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   const secret = process.env.LEAD_WEBHOOK_SECRET;
-  if (secret) headers["X-HDF-Signature"] = createHash("sha256").update(secret + payload).digest("hex");
+  if (secret) headers["X-WCE-Signature"] = createHash("sha256").update(secret + payload).digest("hex");
   try {
     const res = await fetch(url, { method: "POST", headers, body: payload, signal: AbortSignal.timeout(8000) });
     return res.ok;
@@ -29,8 +29,8 @@ async function postJson(url: string, body: unknown): Promise<boolean> {
   }
 }
 
-/** Message WhatsApp destiné à Farid (format UI Kit : court, actionnable). */
-export function faridMessage(lead: LeadRecord): string {
+/** Message WhatsApp destiné au conseiller (format UI Kit : court, actionnable). */
+export function advisorMessage(lead: LeadRecord): string {
   const seg = segments[lead.segment].label;
   const next =
     lead.answers.contact_preference === "rdv"
@@ -39,7 +39,7 @@ export function faridMessage(lead: LeadRecord): string {
         ? "répondre sur WhatsApp"
         : "rappeler";
   return [
-    `NOUVEAU LEAD HDF BÂTI — ${seg}`,
+    `NOUVEAU LEAD WE CARE ÉNERGIE — ${seg}`,
     `Réf. ${lead.id}`,
     lead.summary,
     `Contact : ${lead.contact.name} — ${lead.contact.phone}${lead.contact.email ? ` — ${lead.contact.email}` : ""}`,
@@ -106,9 +106,9 @@ export async function dispatchLead(lead: LeadRecord, ctx: { ip?: string; ua?: st
   const notifyUrl = process.env.LEAD_NOTIFY_WEBHOOK_URL;
   const metaReady = !!(process.env.META_CAPI_TOKEN && (process.env.META_PIXEL_ID ?? process.env.NEXT_PUBLIC_META_PIXEL_ID));
 
-  const text = faridMessage(lead);
+  const text = advisorMessage(lead);
   const [crm, notify, whatsapp, meta] = await Promise.all([
-    crmUrl ? postJson(crmUrl, { type: "hdf_lead", pipelineStage: "nouveau", lead }) : Promise.resolve("not_configured" as const),
+    crmUrl ? postJson(crmUrl, { type: "wce_lead", pipelineStage: "nouveau", lead }) : Promise.resolve("not_configured" as const),
     notifyUrl ? postJson(notifyUrl, { text, leadId: lead.id, temperature: lead.score.temperature, lead }) : Promise.resolve("not_configured" as const),
     whatsappConfigured() ? sendWhatsappLead(lead, text) : Promise.resolve("not_configured" as const),
     metaReady && ctx.consentMarketing ? sendMetaLead(lead, ctx.ip, ctx.ua) : Promise.resolve("not_configured" as const),

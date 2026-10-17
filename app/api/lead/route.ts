@@ -9,6 +9,7 @@ import {
   type LeadInput,
 } from "@/lib/lead";
 import { dispatchLead } from "@/lib/server/integrations";
+import { hasWhatsapp } from "@/config/company";
 
 export const runtime = "nodejs";
 
@@ -93,8 +94,10 @@ export async function POST(req: NextRequest) {
 
   if (!delivered) {
     // Aucune destination n'a reçu la demande (aucune configurée, ou toutes en échec) :
-    // le lead complet est journalisé, et le visiteur l'envoie lui-même à HDF Bâti par
-    // WhatsApp (texte prêt). Ainsi aucune demande ne se termine sans arriver chez Farid.
+    // le lead complet est journalisé, et le visiteur l'envoie lui-même à WE CARE ÉNERGIE par
+    // WhatsApp (texte prêt). Ainsi aucune demande ne se termine sans arriver chez le conseiller.
+    // Sans numéro WhatsApp connu, le relais est impossible : le visiteur voit une erreur
+    // plutôt qu'une fausse confirmation.
     console.warn(
       `[lead] ${configured ? "échec de toutes les destinations" : "aucune destination configurée"} — relais WhatsApp par le visiteur`,
       lead.id,
@@ -103,6 +106,7 @@ export async function POST(req: NextRequest) {
       lead.contact.name,
       lead.contact.phone,
     );
+    if (!hasWhatsapp) return NextResponse.json({ error: "not_delivered" }, { status: 503 });
     return NextResponse.json({ ok: true, leadId: lead.id, temperature: lead.score.temperature, handoff: "whatsapp", whatsappText: visitorWhatsappText(lead) });
   }
 

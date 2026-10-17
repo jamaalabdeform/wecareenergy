@@ -14,8 +14,8 @@ export interface ConsentState {
 }
 
 export const CONSENT_VERSION = 1;
-const KEY = "hdf_consent";
-const EVENT = "hdf:consent";
+const KEY = "wce_consent";
+const EVENT = "wce:consent";
 
 export function readConsent(): ConsentState | null {
   try {
@@ -46,5 +46,5 @@ export function onConsentChange(cb: (s: ConsentState) => void): () => void {
 
 /** Rouvre la bannière (lien « Gérer les cookies »). */
 export function openConsentManager() {
-  window.dispatchEvent(new CustomEvent("hdf:consent-open"));
+  window.dispatchEvent(new CustomEvent("wce:consent-open"));
 }

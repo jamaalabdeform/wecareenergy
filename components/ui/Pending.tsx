@@ -4,7 +4,7 @@ import { cn } from "./cn";
 /**
  * Placeholder de contenu à valider.
  * Rendu uniquement hors production — en production, rien n'est affiché.
- * TODO_HDF_VALIDATION
+ * TODO_WCE_VALIDATION
  */
 export function Pending({ label, note, className, inline = false }: { label: string; note?: string; className?: string; inline?: boolean }) {
   if (!SHOW_PENDING) return null;

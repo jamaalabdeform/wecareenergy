@@ -1,5 +1,5 @@
 import { PhoneCall } from "lucide-react";
-import { company, telHref } from "@/config/company";
+import { company, hasPhone, telHref } from "@/config/company";
 import { dossiers } from "@/config/dossiers";
 import { anchors } from "@/config/navigation";
 import { positioning } from "@/config/positioning";
@@ -7,10 +7,10 @@ import type { Segment } from "@/config/services";
 import { Container } from "../ui/Container";
 import { StudySheet } from "./StudySheet";
 
-const promises = [positioning.reactivite, positioning.aides];
+const promises = [positioning.reactivite, positioning.gestion];
 
 /**
- * Premier écran : le champ vert profond porte le titre et la fiche d'étude.
+ * Premier écran : le champ bleu profond porte le titre et la fiche d'étude.
  * Accueil (sans profil) : titre du brief, la fiche commence par le choix du profil.
  * Page profil : titre du dossier, la fiche est déjà ouverte au bon parcours.
  */
@@ -27,13 +27,13 @@ export function DossierHero({ segment }: { segment?: Segment }) {
             </h1>
           ) : (
             <h1 id="hero-title" className="text-[2.45rem] leading-[1.02] font-bold tracking-[-0.035em] sm:text-5xl lg:text-[3.6rem]">
-              Votre énergie, <span className="whitespace-nowrap text-energy">mieux maîtrisée.</span>
+              Votre énergie, <span className="whitespace-nowrap text-energy">au juste prix.</span>
             </h1>
           )}
           <p className="mt-4 text-[1.05rem] leading-relaxed text-white/85 sm:text-lg">
             {d
               ? d.lead
-              : "Pompes à chaleur, photovoltaïque, rénovation énergétique et contrats d’énergie, pour les particuliers, les professionnels et les collectivités. Remplissez la fiche : nous étudions avant de proposer."}
+              : "Courtier en énergie, WE CARE ÉNERGIE compare pour vous les offres d’électricité et de gaz, et vous accompagne sur vos projets photovoltaïques. Remplissez la fiche : un conseiller vous rappelle sous 24 h."}
           </p>
         </div>
 
@@ -55,12 +55,14 @@ export function DossierHero({ segment }: { segment?: Segment }) {
               <PhoneCall className="size-4 text-energy" aria-hidden />
               Vous préférez être rappelé ?
             </a>
-            <a href={telHref} data-track="phone" data-track-location="hero" className="tabular inline-flex min-h-11 items-center font-semibold text-white/85 hover:text-white">
-              {company.phone.display}
-            </a>
+            {hasPhone && (
+              <a href={telHref} data-track="phone" data-track-location="hero" className="tabular inline-flex min-h-11 items-center font-semibold text-white/85 hover:text-white">
+                {company.phone.display}
+              </a>
+            )}
           </p>
           <p className="mt-1 text-sm text-white/65">
-            {company.name}, entreprise d’{company.address.city} ({company.address.department}).
+            {company.name}, courtier indépendant rémunéré par les fournisseurs partenaires.
           </p>
         </div>
       </Container>

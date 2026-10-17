@@ -4,9 +4,9 @@ import { submitLead, type LeadInput, type SubmitResult } from "@/lib/lead";
  * Point d'extension backend de Jawabot.
  *
  * V1 : l'arbre de qualification est déterministe (config/jawabot.ts) et le lead est
- * envoyé à /api/lead (→ scoring → CRM → alerte WhatsApp Farid).
+ * envoyé à /api/lead (→ scoring → CRM → alerte WhatsApp du conseiller).
  *
- * V2 (prévu) : brancher ici une Knowledge Base HDF / un modèle conversationnel,
+ * V2 (prévu) : brancher ici une Knowledge Base WE CARE ÉNERGIE / un modèle conversationnel,
  * sans toucher à l'interface — il suffit de fournir un autre adaptateur.
  */
 export interface JawabotBackend {

@@ -1,8 +1,8 @@
 # We Care Energy — consignes pour Claude Code
 
-> Ce dépôt part du site HDF Bâti (projet terminé et en production) pour créer le site **We Care Energy**.
+> Ce dépôt part du site WE CARE ÉNERGIE (projet terminé et en production) pour créer le site **We Care Energy**.
 > Lire d'abord `_kit/PROMPT_CLAUDE_CODE.md`, `_kit/BRIEF_WE_CARE_ENERGY.md` et `_kit/PLAN_DE_TRAVAIL.md`.
-> `_kit/reference-hdf/` contient les documents d'origine : modèle à adapter, jamais à recopier tel quel.
+> Le dossier de référence du site d'origine, dans `_kit/`, contient les documents d'origine : modèle à adapter, jamais à recopier tel quel.
 
 ## Outils à utiliser systématiquement
 

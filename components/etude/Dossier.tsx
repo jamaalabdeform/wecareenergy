@@ -45,7 +45,7 @@ export function Dossier({ d }: { d: DossierData }) {
         <div className="rounded-md border border-line bg-white">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-line px-5 py-4 sm:px-8">
             <span className={cn("rounded-[3px] px-2.5 py-1 text-xs font-bold", t.chip)}>{segments[d.segment].label}s</span>
-            <p className="text-sm font-bold text-deep">Votre projet, étape par étape</p>
+            <p className="text-sm font-bold text-deep">Votre demande, étape par étape</p>
           </div>
           <div className="grid gap-x-12 gap-y-10 px-5 py-8 sm:px-8 sm:py-10 lg:grid-cols-[16rem_minmax(0,1fr)]">
             <nav aria-labelledby="sommaire-title" className="lg:sticky lg:top-24 lg:self-start">

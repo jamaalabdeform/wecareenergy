@@ -3,7 +3,7 @@ import type { Segment } from "@/config/services";
 
 /**
  * Moteur Jawabot — logique pure, sans React, testable et réutilisable
- * (Core Jawabot STIPway + configuration HDF dans config/jawabot.ts).
+ * (Core Jawabot STIPway + configuration WE CARE ÉNERGIE dans config/jawabot.ts).
  */
 
 export type JawabotStatus = "chatting" | "submitting" | "done" | "error";

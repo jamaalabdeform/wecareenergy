@@ -3,14 +3,14 @@ import { bestTimeOptions, type LeadRecord } from "@/lib/lead";
 import { segments } from "@/config/services";
 
 /**
- * Alerte WhatsApp directe à Farid via l'API officielle WhatsApp Business Cloud (Meta).
+ * Alerte WhatsApp directe au conseiller via l'API officielle WhatsApp Business Cloud (Meta).
  *
  *  WHATSAPP_TOKEN            jeton d'accès permanent (utilisateur système Meta Business)
- *  WHATSAPP_PHONE_NUMBER_ID  identifiant du numéro EXPÉDITEUR (numéro WhatsApp Business de HDF Bâti)
- *  WHATSAPP_NOTIFY_TO        destinataire(s), format international sans « + » : 33601451110[,33…]
- *  WHATSAPP_TEMPLATE_NAME    modèle approuvé par Meta (ex. nouveau_lead_hdf) — requis pour écrire
- *                            à Farid à tout moment ; sans modèle, envoi en texte libre, qui n'est
- *                            accepté que dans les 24 h suivant un message de Farid au numéro expéditeur.
+ *  WHATSAPP_PHONE_NUMBER_ID  identifiant du numéro EXPÉDITEUR (numéro WhatsApp Business de WE CARE ÉNERGIE)
+ *  WHATSAPP_NOTIFY_TO        destinataire(s), format international sans « + » : 33612345678[,33…]
+ *  WHATSAPP_TEMPLATE_NAME    modèle approuvé par Meta (ex. nouveau_lead_wce) — requis pour écrire
+ *                            au conseiller à tout moment ; sans modèle, envoi en texte libre, qui n'est
+ *                            accepté que dans les 24 h suivant un message du conseiller au numéro expéditeur.
  *  WHATSAPP_TEMPLATE_LANG    langue du modèle (défaut : fr)
  *
  * Texte du modèle à soumettre (catégorie « Utilité », 6 variables) : voir README § Leads → WhatsApp.
@@ -23,7 +23,7 @@ export function whatsappConfigured(): boolean {
   return Boolean(process.env.WHATSAPP_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID && process.env.WHATSAPP_NOTIFY_TO);
 }
 
-/** Destinataires : chiffres uniquement (33601451110), 0X… converti en 33X…. */
+/** Destinataires : chiffres uniquement (33612345678), 0X… converti en 33X…. */
 export function recipients(raw = process.env.WHATSAPP_NOTIFY_TO ?? ""): string[] {
   return raw
     .split(/[,;]+/)

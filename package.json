@@ -2,7 +2,7 @@
   "name": "we-care-energy-site",
   "version": "1.0.0",
   "private": true,
-  "description": "Landing page HDF Bâti — pompe à chaleur, rénovation énergétique, courtage en énergie.",
+  "description": "Landing page WE CARE ÉNERGIE — courtier en électricité, gaz et photovoltaïque.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

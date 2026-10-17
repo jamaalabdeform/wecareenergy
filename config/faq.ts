@@ -1,10 +1,9 @@
-import { company } from "./company";
 import type { Segment } from "./services";
 
 /**
  * FAQ — contenu volontairement prudent, réutilisé pour le schema FAQPage.
- * Toute réponse touchant aux aides ou à la réglementation est marquée `legalReview`
- * (TODO_HDF_VALIDATION : relecture juridique avant production).
+ * Toute réponse touchant à la réglementation est marquée `legalReview`
+ * (TODO_WCE_VALIDATION : relecture juridique avant production).
  */
 export interface FaqItem {
   q: string;
@@ -18,33 +17,39 @@ export const faqFor = (segment?: Segment) => (segment ? faq.filter((f) => !f.for
 
 export const faq: FaqItem[] = [
   {
-    q: "Une pompe à chaleur convient-elle à tous les logements ?",
+    q: "Le changement de fournisseur risque-t-il de couper mon électricité ou mon gaz ?",
     for: ["particulier"],
-    a: "Pas forcément. La pertinence d’une pompe à chaleur dépend du logement, de son isolation, du système de chauffage existant et de vos usages. C’est précisément l’objet de l’étude : vérifier que la solution est adaptée avant de vous proposer quoi que ce soit.",
-  },
-  {
-    q: "Intervenez-vous en appartement ?",
-    for: ["particulier"],
-    a: "Nos projets de pompe à chaleur concernent aujourd’hui les maisons individuelles. Si vous habitez en appartement, décrivez-nous tout de même votre situation : nous vous dirons honnêtement si nous pouvons vous aider.",
-  },
-  {
-    q: "Quelles aides financières peuvent s’appliquer à mon projet ?",
-    for: ["particulier"],
-    a: "Selon votre situation et votre projet, certains dispositifs d’aide peuvent être mobilisables. HDF Bâti vous aide à identifier les dispositifs applicables. Aucune aide n’est automatique : elles dépendent de conditions d’éligibilité et de la réglementation en vigueur. Le service public France Rénov’ informe également gratuitement sur les aides.",
+    a: "Non. Le réseau (Enedis, GRDF ou l’entreprise locale de distribution) et le compteur restent les mêmes, quel que soit le fournisseur : seul le contrat change. Le nouveau fournisseur se charge de la résiliation de l’ancien contrat.",
     legalReview: true,
   },
   {
-    q: "Dans quelle zone intervenez-vous ?",
-    a: `HDF Bâti est basée à ${company.address.city} (${company.address.department}). Nous intervenons dans les Hauts-de-France et, selon la nature du projet, partout en France.`,
+    q: "Le service est-il payant ?",
+    a: "Non, la comparaison et l’accompagnement ne vous sont pas facturés. WE CARE ÉNERGIE est un courtier : nous sommes rémunérés par les fournisseurs partenaires lorsqu’un contrat est signé grâce à notre mise en relation.",
   },
   {
-    q: "En quoi consiste l’accompagnement sur les contrats d’énergie ?",
+    q: "Suis-je engagé si je remplis la fiche ?",
+    a: "Non. Remplir la fiche ou demander un rappel ne vous engage à rien. Si vous souscrivez ensuite un contrat à distance, vous disposez d’un délai de rétractation de 14 jours.",
+    legalReview: true,
+  },
+  {
+    q: "Comparez-vous toutes les offres du marché ?",
+    for: ["particulier"],
+    a: "Nous comparons les offres des fournisseurs avec lesquels nous travaillons. Pour une vue indépendante de l’ensemble du marché, le médiateur national de l’énergie propose un comparateur officiel sur energie-info.fr.",
+    legalReview: true,
+  },
+  {
+    q: "Pouvez-vous m’accompagner pour des panneaux photovoltaïques ?",
+    for: ["particulier", "professionnel"],
+    a: "Oui. Lors de l’échange, nous regardons avec vous si une installation est pertinente pour votre logement ou vos bâtiments, et quelles en seraient les étapes.",
+  },
+  {
+    q: "Dans quelle zone intervenez-vous ?",
+    a: "Partout en France : la comparaison et le changement de fournisseur se font à distance, par téléphone et en ligne.",
+  },
+  {
+    q: "Mon contrat d’entreprise est encore engagé : pouvez-vous m’aider ?",
     for: ["professionnel", "collectivite"],
-    a: "Pour les professionnels et les collectivités, nous analysons vos contrats d’électricité et de gaz, vos échéances et, lorsque c’est pertinent, vos consommations. Nous vous présentons ensuite les pistes identifiées, leurs conditions et leurs limites. Nous ne promettons pas d’économie chiffrée avant d’avoir étudié votre dossier.",
+    a: "Oui. Nous notons la date d’échéance de votre contrat et préparons la suite pour que vous puissiez décider au bon moment, sans pénalité de résiliation anticipée.",
     legalReview: true,
-  },
-  {
-    q: "Décrire mon projet m’engage-t-il à quelque chose ?",
-    a: "Non. Remplir la fiche ou demander un rappel ne vous engage à rien. Vos informations servent uniquement à préparer l’échange avec HDF Bâti.",
   },
 ];

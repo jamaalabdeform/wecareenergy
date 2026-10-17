@@ -4,7 +4,7 @@ import { useEffect, useReducer, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Loader2, MessageCircle, Phone } from "lucide-react";
 import { answerLabel, jawabotCopy, segmentChoices, type ChoiceOption, type Step, type TextStep } from "@/config/jawabot";
-import { company, telHref, whatsappHref } from "@/config/company";
+import { company, hasPhone, hasWhatsapp, telHref, whatsappHref } from "@/config/company";
 import { dossierHref } from "@/config/dossiers";
 import { segmentOrder, segments, segmentTone, type Segment } from "@/config/services";
 import { positioning } from "@/config/positioning";
@@ -26,7 +26,7 @@ import { ConsentField, SelectField, TextField } from "../forms/Field";
 import { cn } from "../ui/cn";
 
 /**
- * Fiche d'étude : le formulaire par étapes de HDF Bâti.
+ * Fiche d'étude : le formulaire par étapes de WE CARE ÉNERGIE.
  * Chaque rubrique se remplit sous les yeux du visiteur ; les questions viennent
  * de config/jawabot.ts et la logique du moteur pur lib/jawabot/engine.ts.
  */
@@ -61,7 +61,7 @@ export function StudySheet({ segment: fixed, origin }: { segment?: Segment; orig
   const interacted = useRef(false);
   const startedTracking = useRef(false);
 
-  const storageKey = `hdf-fiche:${fixed ?? "accueil"}`;
+  const storageKey = `wce-fiche:${fixed ?? "accueil"}`;
   const [restored, setRestored] = useState(false);
 
   // Reprise après interruption : seules les réponses au projet sont gardées, le temps de la visite.
@@ -175,7 +175,6 @@ export function StudySheet({ segment: fixed, origin }: { segment?: Segment; orig
       if (result.handoff === "whatsapp" && result.whatsappText) setHandoff({ text: result.whatsappText, sent: false });
       dispatch({ type: "done", leadId: result.leadId });
       track("qualified_lead", { segment: state.segment, lead_id: result.leadId, lead_temperature: result.temperature, source: "jawabot" }, eventId);
-      if (state.answers.contact_preference === "rdv") track("appointment_request", { segment: state.segment, lead_id: result.leadId, source: "jawabot" });
     } else {
       dispatch({ type: "error" });
     }
@@ -225,7 +224,7 @@ export function StudySheet({ segment: fixed, origin }: { segment?: Segment; orig
         {/* En-tête de la fiche */}
         <div className="flex items-start justify-between gap-3 border-b border-line px-4 pt-4 pb-3 sm:px-6">
           <div>
-            <p className="text-sm font-bold text-deep">Fiche d’étude</p>
+            <p className="text-sm font-bold text-deep">Votre fiche</p>
             <p className="text-xs text-muted">
               {company.name} ·{" "}
               {state.segment ? (
@@ -242,7 +241,7 @@ export function StudySheet({ segment: fixed, origin }: { segment?: Segment; orig
             key={sent ? "sent" : done ? "ready" : "open"}
             className={cn(
               "stamp mt-0.5 inline-flex shrink-0 items-center rounded-[3px] border-2 px-2 py-0.5 text-[0.7rem] font-bold tracking-[0.06em] uppercase",
-              sent ? "stamp-press border-hdf bg-hdf text-white" : "border-hdf/70 text-hdf",
+              sent ? "stamp-press border-brand bg-brand text-white" : "border-brand/70 text-brand",
             )}
           >
             {sent ? "Transmise" : done ? "Prête" : "À compléter"}
@@ -251,7 +250,7 @@ export function StudySheet({ segment: fixed, origin }: { segment?: Segment; orig
 
         <div className="px-4 pt-4 sm:px-6">
           <h2 className="text-xl font-bold text-deep sm:text-[1.4rem]">
-            Étudions votre projet
+            Préparons votre comparatif
             {!done && counted && (
               <span className="tabular font-semibold text-muted">
                 {" "}
@@ -271,7 +270,7 @@ export function StudySheet({ segment: fixed, origin }: { segment?: Segment; orig
                   setRestored(false);
                   restart();
                 }}
-                className="-my-3 inline py-3 font-semibold text-hdf underline underline-offset-2 hover:text-deep"
+                className="-my-3 inline py-3 font-semibold text-brand underline underline-offset-2 hover:text-deep"
               >
                 Recommencer
               </button>
@@ -283,7 +282,7 @@ export function StudySheet({ segment: fixed, origin }: { segment?: Segment; orig
                 key={r.id}
                 className={cn(
                   "h-1.5 flex-1 rounded-[1px] transition-colors duration-300",
-                  isAnswered(r) && r.id !== activeId ? "bg-hdf" : r.id === activeId ? "bg-energy" : "bg-line",
+                  isAnswered(r) && r.id !== activeId ? "bg-brand" : r.id === activeId ? "bg-energy" : "bg-line",
                 )}
               />
             ))}
@@ -300,7 +299,7 @@ export function StudySheet({ segment: fixed, origin }: { segment?: Segment; orig
               return (
                 <li key={row.id} data-active-rubric className="rubric-in relative grid scroll-mt-24 grid-cols-[1.75rem_1fr] gap-x-2 border-t border-line py-4 first:border-t-0 sm:gap-x-3">
                   <span aria-hidden className="absolute top-4 bottom-4 -left-4 w-1 bg-energy sm:-left-6" />
-                  <span className="tabular pt-1 text-sm font-bold text-hdf">{n}</span>
+                  <span className="tabular pt-1 text-sm font-bold text-brand">{n}</span>
                   <div className="min-w-0">
                     <ActiveRubric
                       row={row}
@@ -332,7 +331,7 @@ export function StudySheet({ segment: fixed, origin }: { segment?: Segment; orig
               const v = valueOf(row);
               return (
                 <li key={row.id} className="grid grid-cols-[1.75rem_1fr] gap-x-2 border-t border-line py-1.5 first:border-t-0 sm:gap-x-3">
-                  <span className="tabular pt-2.5 text-sm font-semibold text-hdf sm:pt-3">{n}</span>
+                  <span className="tabular pt-2.5 text-sm font-semibold text-brand sm:pt-3">{n}</span>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <p className="min-w-0 flex-1 py-1.5 sm:flex sm:items-baseline sm:gap-2 sm:py-2">
@@ -345,13 +344,13 @@ export function StudySheet({ segment: fixed, origin }: { segment?: Segment; orig
                           type="button"
                           onClick={() => rewind(row.id)}
                           disabled={state.status === "submitting"}
-                          className="-mr-2 inline-flex min-h-11 shrink-0 items-center px-2 text-xs font-semibold text-hdf underline underline-offset-2 hover:text-deep disabled:opacity-50"
+                          className="-mr-2 inline-flex min-h-11 shrink-0 items-center px-2 text-xs font-semibold text-brand underline underline-offset-2 hover:text-deep disabled:opacity-50"
                         >
                           Modifier<span className="sr-only"> : {row.label}</span>
                         </button>
                       )}
                     </div>
-                    {v.note && !done && <p className="pb-2 text-sm leading-snug text-navy">{v.note}</p>}
+                    {v.note && !done && <p className="pb-2 text-sm leading-snug text-leaf">{v.note}</p>}
                   </div>
                 </li>
               );
@@ -382,10 +381,10 @@ export function StudySheet({ segment: fixed, origin }: { segment?: Segment; orig
         )}
 
         {done && handoff && !handoff.sent ? (
-          <div data-sheet-done tabIndex={-1} role="status" className="border-t-2 border-hdf px-4 py-5 outline-none sm:px-6">
-            <p className="text-lg font-bold text-deep">Dernière étape : envoyez votre fiche à HDF Bâti</p>
+          <div data-sheet-done tabIndex={-1} role="status" className="border-t-2 border-brand px-4 py-5 outline-none sm:px-6">
+            <p className="text-lg font-bold text-deep">Dernière étape : envoyez votre fiche à WE CARE ÉNERGIE</p>
             <p className="mt-1.5 text-[0.95rem] leading-relaxed text-muted">
-              Votre fiche est prête. Un appui l’ouvre dans WhatsApp, déjà rédigée : il ne reste qu’à l’envoyer au {company.phone.display}.
+              Votre fiche est prête. Un appui l’ouvre dans WhatsApp, déjà rédigée : il ne reste qu’à l’envoyer.
             </p>
             <a
               href={whatsappHref(handoff.text)}
@@ -402,6 +401,7 @@ export function StudySheet({ segment: fixed, origin }: { segment?: Segment; orig
               <MessageCircle className="size-5" aria-hidden />
               Envoyer ma fiche sur WhatsApp
             </a>
+            {hasPhone && (
             <p className="mt-3 text-sm text-muted">
               Pas de WhatsApp ? Appelez le{" "}
               <a href={telHref} data-track="phone" data-track-location="fiche_relais" className="tabular font-semibold whitespace-nowrap text-deep underline">
@@ -409,13 +409,14 @@ export function StudySheet({ segment: fixed, origin }: { segment?: Segment; orig
               </a>{" "}
               en citant la référence <strong className="tabular text-deep">{state.leadId}</strong>.
             </p>
+            )}
           </div>
         ) : done ? (
-          <div data-sheet-done tabIndex={-1} role="status" className="border-t-2 border-hdf px-4 py-5 outline-none sm:px-6">
+          <div data-sheet-done tabIndex={-1} role="status" className="border-t-2 border-brand px-4 py-5 outline-none sm:px-6">
             {/* Le tampon est reposé ici : sur mobile, l'en-tête de la fiche est alors hors écran. */}
             <div className="flex items-start justify-between gap-3">
               <p className="text-lg font-bold text-deep">{jawabotCopy.successTitle}</p>
-              <span className="stamp-press mt-0.5 inline-flex shrink-0 items-center rounded-[3px] border-2 border-hdf bg-hdf px-2 py-0.5 text-[0.7rem] font-bold tracking-[0.06em] text-white uppercase sm:hidden">Transmise</span>
+              <span className="stamp-press mt-0.5 inline-flex shrink-0 items-center rounded-[3px] border-2 border-brand bg-brand px-2 py-0.5 text-[0.7rem] font-bold tracking-[0.06em] text-white uppercase sm:hidden">Transmise</span>
             </div>
             <p className="mt-1.5 text-[0.95rem] leading-relaxed text-muted">
               {jawabotCopy.successText}
@@ -431,26 +432,30 @@ export function StudySheet({ segment: fixed, origin }: { segment?: Segment; orig
               </p>
             )}
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              {hasWhatsapp && (
               <a
                 href={whatsappHref(whatsappMessageForLead(state.leadId, state.segment ?? "particulier"))}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-track="whatsapp"
                 data-track-location="fiche_transmise"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-hdf px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-hdf-dark"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-brand px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
               >
                 <MessageCircle className="size-4" aria-hidden />
-                Échanger avec HDF Bâti sur WhatsApp
+                Échanger avec nous sur WhatsApp
               </a>
+              )}
+              {hasPhone && (
               <a
                 href={telHref}
                 data-track="phone"
                 data-track-location="fiche_transmise"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-deep/25 px-4 text-sm font-semibold text-deep transition-colors hover:border-hdf hover:text-hdf"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-deep/25 px-4 text-sm font-semibold text-deep transition-colors hover:border-brand hover:text-brand"
               >
                 <Phone className="size-4" aria-hidden />
                 <span className="tabular">{company.phone.display}</span>
               </a>
+              )}
             </div>
             <button type="button" onClick={restart} className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-muted underline underline-offset-2 hover:text-deep">
               Remplir une nouvelle fiche
@@ -511,6 +516,7 @@ function ActiveRubric({
           key={s.id}
           askRole={!!s.askRole}
           askBestTime={state.answers.contact_preference === "rappel"}
+          emailRequired={state.answers.contact_preference === "email"}
           initial={state.contact}
           submitting={state.status === "submitting"}
           retry={state.status === "error"}
@@ -563,16 +569,16 @@ function Choices({
             data-autofocus={(selected ? on : i === 0) ? true : undefined}
             onClick={() => choose(o.value)}
             className={cn(
-              "group flex min-h-12 items-center gap-3 rounded-md border bg-white px-3 py-2 text-left text-[0.95rem] leading-tight font-semibold text-deep transition-[border-color,background-color] duration-150 hover:border-hdf hover:bg-surface",
-              on ? "border-hdf bg-surface" : "border-deep/20",
+              "group flex min-h-12 items-center gap-3 rounded-md border bg-white px-3 py-2 text-left text-[0.95rem] leading-tight font-semibold text-deep transition-[border-color,background-color] duration-150 hover:border-brand hover:bg-surface",
+              on ? "border-brand bg-surface" : "border-deep/20",
               accent && cn("border-l-4", accent(o.value)),
             )}
           >
-            <span aria-hidden className={cn("grid size-5 shrink-0 place-items-center rounded-[3px] border-2 transition-colors group-hover:border-hdf", on ? "border-hdf" : "border-deep/35")}>
-              <span className={cn("size-2.5 rounded-[1px] bg-hdf transition-opacity", on ? "opacity-100" : "opacity-0 group-hover:opacity-40")} />
+            <span aria-hidden className={cn("grid size-5 shrink-0 place-items-center rounded-[3px] border-2 transition-colors group-hover:border-brand", on ? "border-brand" : "border-deep/35")}>
+              <span className={cn("size-2.5 rounded-[1px] bg-brand transition-opacity", on ? "opacity-100" : "opacity-0 group-hover:opacity-40")} />
             </span>
             <span className="flex-1">{o.label}</span>
-            <ArrowRight aria-hidden className="size-4 shrink-0 text-hdf opacity-50 transition-[opacity,transform] group-hover:translate-x-0.5 group-hover:opacity-100" />
+            <ArrowRight aria-hidden className="size-4 shrink-0 text-brand opacity-50 transition-[opacity,transform] group-hover:translate-x-0.5 group-hover:opacity-100" />
           </button>
         );
       })}
@@ -618,7 +624,7 @@ function LineInput({ step, postal = false, labelledBy, initial = "", onSubmit }:
             ? { inputMode: "numeric" as const, autoComplete: "postal-code", maxLength: 5 }
             : { autoComplete: step?.autoComplete ?? "off", maxLength: step?.maxLength, placeholder: step?.placeholder })}
           className={cn(
-            "min-h-12 w-full min-w-0 rounded-none border-0 border-b-2 border-deep/30 bg-transparent px-1 text-lg text-ink placeholder:text-muted focus:border-hdf aria-[invalid=true]:border-[#b42318]",
+            "min-h-12 w-full min-w-0 rounded-none border-0 border-b-2 border-deep/30 bg-transparent px-1 text-lg text-ink placeholder:text-muted focus:border-brand aria-[invalid=true]:border-[#b42318]",
             postal && "tabular tracking-[0.12em]",
           )}
         />
@@ -645,6 +651,7 @@ function LineInput({ step, postal = false, labelledBy, initial = "", onSubmit }:
 function ContactFields({
   askRole,
   askBestTime,
+  emailRequired,
   initial,
   submitting,
   retry,
@@ -655,6 +662,7 @@ function ContactFields({
 }: {
   askRole: boolean;
   askBestTime: boolean;
+  emailRequired: boolean;
   initial: JawabotContact;
   submitting: boolean;
   retry: boolean;
@@ -686,7 +694,8 @@ function ContactFields({
         const next: typeof errors = {};
         if (v.name.trim().length < 2) next.name = "Indiquez votre nom.";
         if (!normalizeFrenchPhone(v.phone)) next.phone = "Numéro français à 10 chiffres (ex. : 06 12 34 56 78).";
-        if (v.email && !isValidEmail(v.email)) next.email = "Adresse e-mail invalide.";
+        if (emailRequired && !v.email.trim()) next.email = "Indiquez l’adresse où recevoir le comparatif.";
+        else if (v.email && !isValidEmail(v.email)) next.email = "Adresse e-mail invalide.";
         if (askBestTime && !v.bestTime) next.bestTime = "Choisissez un moment pour être rappelé.";
         if (!consent) next.consent = "Votre accord est nécessaire pour être recontacté.";
         setErrors(next);
@@ -701,7 +710,7 @@ function ContactFields({
       <TextField label="Nom et prénom" autoComplete="name" value={v.name} onChange={set("name")} error={errors.name} data-autofocus />
       <TextField label="Téléphone" type="tel" inputMode="tel" autoComplete="tel" hint="Par exemple 06 12 34 56 78." value={v.phone} onChange={set("phone")} error={errors.phone} />
       {askBestTime && <SelectField label="Meilleur moment pour vous rappeler" placeholder="Sélectionnez…" options={bestTimeOptions} value={v.bestTime} onChange={set("bestTime")} error={errors.bestTime} />}
-      <TextField label="E-mail" type="email" autoComplete="email" optional value={v.email} onChange={set("email")} error={errors.email} />
+      <TextField label="E-mail" type="email" autoComplete="email" optional={!emailRequired} value={v.email} onChange={set("email")} error={errors.email} />
       {askRole && <TextField label="Fonction" autoComplete="organization-title" optional value={v.role} onChange={set("role")} />}
       <ConsentField
         checked={consent}
@@ -714,21 +723,15 @@ function ContactFields({
       />
       {retry && (
         <p ref={alertRef} tabIndex={-1} role="alert" className="rounded-md bg-[#fdecea] px-3 py-2.5 text-sm text-[#8b1d12] outline-none">
-          {jawabotCopy.errorText}{" "}
-          <a href={telHref} data-track="phone" data-track-location="fiche_erreur" className="tabular font-semibold whitespace-nowrap underline">
-            {company.phone.display}
-          </a>{" "}
-          ou{" "}
-          <a
-            href={whatsappHref("Bonjour HDF Bâti, je n’ai pas pu envoyer ma demande depuis votre site.")}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-track="whatsapp"
-            data-track-location="fiche_erreur"
-            className="font-semibold underline"
-          >
-            WhatsApp
-          </a>
+          {jawabotCopy.errorText}
+          {hasPhone && (
+            <>
+              {" "}ou appelez le{" "}
+              <a href={telHref} data-track="phone" data-track-location="fiche_erreur" className="tabular font-semibold whitespace-nowrap underline">
+                {company.phone.display}
+              </a>
+            </>
+          )}
           .
         </p>
       )}

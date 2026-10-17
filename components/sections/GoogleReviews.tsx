@@ -12,7 +12,7 @@ function Stars({ value, className = "size-4" }: { value: number; className?: str
   return (
     <span className="inline-flex gap-0.5" aria-hidden>
       {Array.from({ length: 5 }, (_, i) => (
-        <Star key={i} className={`${className} ${i < Math.round(value) ? "fill-hdf text-hdf" : "fill-line text-line"}`} />
+        <Star key={i} className={`${className} ${i < Math.round(value) ? "fill-brand text-brand" : "fill-line text-line"}`} />
       ))}
     </span>
   );
@@ -35,7 +35,7 @@ export async function GoogleReviews() {
             href={ficheUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-11 w-fit items-center gap-2 font-semibold text-hdf underline decoration-hdf/40 underline-offset-4 hover:decoration-hdf"
+            className="inline-flex min-h-11 w-fit items-center gap-2 font-semibold text-brand underline decoration-brand/40 underline-offset-4 hover:decoration-brand"
           >
             Voir nos avis sur Google
             <ExternalLink className="size-4" aria-hidden />
@@ -79,7 +79,7 @@ export async function GoogleReviews() {
               href={data.reviewsUrl ?? ficheUrl ?? undefined}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-11 w-fit items-center gap-2 font-semibold text-hdf underline decoration-hdf/40 underline-offset-4 hover:decoration-hdf"
+              className="inline-flex min-h-11 w-fit items-center gap-2 font-semibold text-brand underline decoration-brand/40 underline-offset-4 hover:decoration-brand"
             >
               Voir tous les avis sur Google
               <ExternalLink className="size-4" aria-hidden />

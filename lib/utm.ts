@@ -30,8 +30,8 @@ export interface Attribution extends Partial<Record<AttributionKey, string>> {
   fbc?: string;
 }
 
-const SESSION_KEY = "hdf_attribution";
-const FIRST_KEY = "hdf_first_touch";
+const SESSION_KEY = "wce_attribution";
+const FIRST_KEY = "wce_first_touch";
 
 function safeGet(storage: () => Storage, key: string): Attribution | null {
   try {

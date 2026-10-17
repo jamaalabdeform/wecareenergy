@@ -1,20 +1,21 @@
 import { anchors } from "./navigation";
+import { confirmed, pending, SHOW_PENDING, type Validated } from "./validation";
 
 /**
- * Les 3 parcours commerciaux HDF Bâti. Un même univers, trois portes d'entrée
- * distinctes (cf. Brand Book : « une marque, quatre portes d'entrée, pas quatre logos »).
+ * Les 3 parcours commerciaux WE CARE ÉNERGIE. Priorité aux particuliers (canal publicitaire) ;
+ * les entreprises et collectivités sont le portefeuille historique suivi par Jamel MER.
  */
 export type Segment = "particulier" | "professionnel" | "collectivite";
 
-export type SegmentTone = "green" | "navy" | "orange";
+export type SegmentTone = "brand" | "leaf" | "orange";
 
 /**
  * Classes de la couleur de chaque profil (onglets, filets, repères, liens).
  * Sur l'orange, le texte est foncé (ink) ; en texte sur fond clair, on utilise action-ink.
  */
 export const toneClasses = {
-  green: { chip: "bg-hdf text-white", rule: "border-hdf", text: "text-hdf", mark: "bg-hdf", accent: "border-l-hdf hover:border-l-hdf", current: "aria-[current=page]:text-hdf aria-[current=page]:decoration-hdf", link: "text-hdf decoration-hdf/40 hover:decoration-hdf" },
-  navy: { chip: "bg-navy text-white", rule: "border-navy", text: "text-navy", mark: "bg-navy", accent: "border-l-navy hover:border-l-navy", current: "aria-[current=page]:text-navy aria-[current=page]:decoration-navy", link: "text-navy decoration-navy/40 hover:decoration-navy" },
+  brand: { chip: "bg-brand text-white", rule: "border-brand", text: "text-brand", mark: "bg-brand", accent: "border-l-brand hover:border-l-brand", current: "aria-[current=page]:text-brand aria-[current=page]:decoration-brand", link: "text-brand decoration-brand/40 hover:decoration-brand" },
+  leaf: { chip: "bg-leaf text-white", rule: "border-leaf", text: "text-leaf", mark: "bg-leaf", accent: "border-l-leaf hover:border-l-leaf", current: "aria-[current=page]:text-leaf aria-[current=page]:decoration-leaf", link: "text-leaf decoration-leaf/40 hover:decoration-leaf" },
   orange: { chip: "bg-action text-ink", rule: "border-action", text: "text-action-ink", mark: "bg-action", accent: "border-l-action hover:border-l-action", current: "aria-[current=page]:text-action-ink aria-[current=page]:decoration-action", link: "text-action-ink decoration-action hover:decoration-action-ink" },
 } as const satisfies Record<SegmentTone, Record<string, string>>;
 
@@ -24,9 +25,8 @@ export interface SegmentDef {
   /** Libellé court du choix dans le hero. */
   chooserLabel: string;
   chooserHint: string;
-  /** Badge d'activité (Brand Book). */
   badge: string;
-  /** Couleur de segment : particulier = vert, pro = bleu, collectivité = orange. */
+  /** Couleur de segment : particulier = bleu, pro = vert, collectivité = orange. */
   tone: SegmentTone;
   cta: string;
 }
@@ -37,9 +37,9 @@ export const segments: Record<Segment, SegmentDef> = {
     label: "Particulier",
     chooserLabel: "Particulier",
     chooserHint: "Mon logement",
-    badge: "Habitat",
-    tone: "green",
-    cta: "Étudier mon projet",
+    badge: "Particuliers",
+    tone: "brand",
+    cta: "Comparer mes offres",
   },
   professionnel: {
     id: "professionnel",
@@ -47,8 +47,8 @@ export const segments: Record<Segment, SegmentDef> = {
     chooserLabel: "Professionnel",
     chooserHint: "Mon entreprise",
     badge: "Pro",
-    tone: "navy",
-    cta: "Parler de mon projet",
+    tone: "leaf",
+    cta: "Faire relire mes contrats",
   },
   collectivite: {
     id: "collectivite",
@@ -62,6 +62,19 @@ export const segments: Record<Segment, SegmentDef> = {
 };
 
 export const segmentOrder: Segment[] = ["particulier", "professionnel", "collectivite"];
+
+/**
+ * Offres de WE CARE ÉNERGIE. Une offre non confirmée n'apparaît qu'en préproduction.
+ * TODO_WCE_VALIDATION : la pompe à chaleur est probable mais non confirmée par le client.
+ */
+export const offers = {
+  fournisseur: confirmed(true, "Métier de courtier en énergie (contrat, réunion du 19/07/2026)"),
+  photovoltaique: confirmed(true, "Indication de l'équipe projet, 17/10/2026"),
+  pac: pending<boolean>("Le client propose-t-il aussi les pompes à chaleur ? (« je pense même les PAC », 17/10/2026) — en propre ou via un installateur RGE partenaire ?"),
+} satisfies Record<string, Validated<boolean>>;
+
+/** Une offre s'affiche si elle est confirmée, ou en préproduction si elle est à confirmer. */
+export const offerShown = (o: Validated<boolean>) => o.status === "confirmed" || SHOW_PENDING;
 
 /** Section « Votre projet » — 3 grandes cartes. */
 export interface ProjectCard {
@@ -85,23 +98,28 @@ export const projectCards: ProjectCard[] = [
   {
     id: "particuliers",
     anchor: anchors.particuliers + "-carte",
-    badge: "Habitat",
-    tone: "green",
-    title: "Améliorez le confort de votre logement",
-    text: "Pompe à chaleur et solutions de rénovation énergétique adaptées à votre maison et à votre projet.",
-    points: ["Pompe à chaleur", "Photovoltaïque", "Rénovation énergétique"],
-    cta: "Étudier mon projet",
+    badge: "Particuliers",
+    tone: "brand",
+    title: "Payez le juste prix pour votre électricité et votre gaz",
+    text: "Un conseiller compare les offres du marché à partir de votre facture, et vous accompagne si vous souhaitez produire votre propre électricité.",
+    points: [
+      "Comparatif électricité et gaz",
+      "Changement de fournisseur sans coupure",
+      "Panneaux photovoltaïques",
+      ...(offerShown(offers.pac) ? ["Pompe à chaleur"] : []),
+    ],
+    cta: "Comparer mes offres",
     segment: "particulier",
   },
   {
     id: "professionnels",
     anchor: anchors.professionnels + "-carte",
     badge: "Pro",
-    tone: "navy",
-    title: "Maîtrisez les besoins énergétiques de votre activité",
-    text: "Des solutions adaptées à vos bâtiments et à vos contraintes professionnelles.",
-    points: ["Pompe à chaleur et photovoltaïque", "Performance du bâtiment", "Contrats d’énergie"],
-    cta: "Parler à HDF Bâti",
+    tone: "leaf",
+    title: "Des contrats d’énergie adaptés à votre activité",
+    text: "Nous relisons vos contrats d’électricité et de gaz, suivons leurs échéances et négocions au bon moment.",
+    points: ["Contrats d’électricité et de gaz", "Suivi des échéances et renouvellements", "Photovoltaïque sur vos bâtiments"],
+    cta: "Faire relire mes contrats",
     segment: "professionnel",
   },
   {
@@ -109,58 +127,58 @@ export const projectCards: ProjectCard[] = [
     anchor: anchors.energie,
     badge: "Collectivités",
     tone: "orange",
-    title: "Reprenez le contrôle de vos contrats d’énergie",
-    text: "Communes, intercommunalités et établissements publics : analyse et optimisation de vos contrats d’électricité et de gaz, et accompagnement de vos projets de bâtiments.",
-    points: ["Contrats d’électricité et de gaz", "Échéances et renouvellements", "Chauffage et photovoltaïque des bâtiments"],
+    title: "Reprenez la main sur les contrats d’énergie de votre structure",
+    text: "Communes, intercommunalités et établissements publics : analyse de vos contrats d’électricité et de gaz, de leurs échéances et de vos consommations.",
+    points: ["Contrats d’électricité et de gaz", "Échéances et renouvellements", "Échanges par e-mail, à votre rythme"],
     cta: "Optimiser mes contrats",
     segment: "collectivite",
   },
 ];
 
-/** Parcours pédagogique particulier. */
+/** Parcours particulier (maquette B2C : simule → un conseiller compare → vous changez sans coupure). */
 export const parcoursParticulier = [
   {
-    title: "Je décris mon projet",
-    text: "En quelques questions, en ligne ou par téléphone : votre maison, votre chauffage actuel, vos attentes.",
+    title: "Je décris ma situation",
+    text: "En quelques questions : votre logement, votre énergie, votre fournisseur actuel et le montant de votre facture.",
   },
   {
-    title: "HDF Bâti analyse ma situation",
-    text: "Nous regardons si le projet est adapté à votre logement et quels dispositifs d’aide pourraient s’appliquer.",
+    title: "Un conseiller compare pour moi",
+    text: "Il vous rappelle sous 24 h, au créneau choisi, avec un comparatif des offres adaptées à votre consommation.",
   },
   {
-    title: "Nous échangeons sur les solutions adaptées",
-    text: "Un interlocuteur vous explique les options, les étapes et ce qu’il faut prévoir — avant tout engagement.",
+    title: "Je décide, sans engagement",
+    text: "Vous gardez votre contrat actuel si rien n’est plus intéressant. Aucune obligation de changer.",
   },
   {
-    title: "Proposition / étude",
-    text: "Vous recevez une proposition claire, établie à partir de votre situation réelle.",
+    title: "Je signe en ligne",
+    text: "Si l’offre vous convient, le contrat est établi par le fournisseur et signé électroniquement. Nous gérons les démarches.",
   },
   {
-    title: "Réalisation et suivi selon le projet",
-    text: "Organisation des travaux, réalisation et suivi, selon la nature de votre projet.",
+    title: "Le changement se fait sans coupure",
+    text: "Le nouveau fournisseur s’occupe de la résiliation de l’ancien contrat. Le réseau et le compteur ne changent pas.",
   },
 ] as const;
 
-/** Parcours professionnel / énergie — distinct du parcours particulier. */
+/** Parcours professionnel / collectivité — distinct du parcours particulier. */
 export const parcoursPro = [
   {
     title: "Compréhension de votre structure",
-    text: "Activité, bâtiments, sites, organisation : nous partons de votre réalité.",
+    text: "Activité, sites, organisation : nous partons de votre réalité.",
   },
   {
-    title: "Analyse du besoin",
-    text: "Chauffage, performance du bâtiment, production d’énergie ou contrats : nous clarifions les priorités.",
+    title: "Lecture de vos contrats",
+    text: "Fournisseurs, prix, durées d’engagement et dates d’échéance de vos contrats d’électricité et de gaz.",
   },
   {
-    title: "Analyse des contrats et consommations",
-    text: "Lorsque c’est pertinent : lecture de vos contrats, échéances et historiques de consommation.",
+    title: "Analyse des consommations",
+    text: "Lorsque vous les avez : historiques de consommation et factures récentes.",
   },
   {
-    title: "Identification des pistes d’optimisation",
-    text: "Nous vous présentons les options identifiées, leurs conditions et leurs limites.",
+    title: "Consultation des fournisseurs",
+    text: "Nous vous présentons les offres obtenues, leurs conditions et leurs limites, au bon moment avant l’échéance.",
   },
   {
-    title: "Accompagnement HDF Bâti",
-    text: "Un interlocuteur unique pour la mise en œuvre et le suivi des décisions prises.",
+    title: "Suivi dans la durée",
+    text: "Un interlocuteur unique, qui vous alerte avant chaque renouvellement.",
   },
 ] as const;

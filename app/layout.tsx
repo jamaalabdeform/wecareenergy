@@ -13,7 +13,7 @@ import { businessJsonLd, jsonLd, websiteJsonLd } from "@/lib/schema";
 import "./globals.css";
 
 /** Clé publique du widget Jawabot (assistant en ligne). Variable vide = widget désactivé. */
-const jawabotKey = process.env.NEXT_PUBLIC_JAWABOT_WIDGET_KEY ?? "jwbw_fviauhmj9jekz7ambasje89s";
+const jawabotKey = process.env.NEXT_PUBLIC_JAWABOT_WIDGET_KEY ?? "";
 
 const inter = localFont({
   src: "./inter-latin-wght.woff2",
@@ -27,16 +27,16 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: seo.title, template: seo.titleTemplate },
   description: seo.description,
-  applicationName: "HDF Bâti",
+  applicationName: "WE CARE ÉNERGIE",
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     locale: seo.locale,
     url: "/",
-    siteName: "HDF Bâti",
+    siteName: "WE CARE ÉNERGIE",
     title: seo.title,
     description: seo.description,
-    images: [{ url: seo.ogImage, width: 1200, height: 630, alt: "HDF Bâti — Votre énergie, mieux maîtrisée." }],
+    images: [{ url: seo.ogImage, width: 1200, height: 630, alt: "WE CARE ÉNERGIE — Courtier en électricité, gaz et photovoltaïque" }],
   },
   twitter: { card: "summary_large_image", title: seo.title, description: seo.description, images: [seo.ogImage] },
   robots: SITE_ENV === "production" ? { index: true, follow: true } : { index: false, follow: false },

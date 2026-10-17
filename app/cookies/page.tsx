@@ -21,13 +21,13 @@ export default function Cookies() {
       </section>
       <section>
         <h2>Stockage technique</h2>
-        <p>Le site conserve localement votre choix de consentement et, le temps de votre visite, la source de campagne qui vous a amené (paramètres UTM) afin de l’associer à votre demande. Si vous commencez la fiche d’étude, vos réponses sur le projet (jamais vos nom, téléphone ou e-mail) sont gardées dans votre navigateur le temps de la visite, pour que vous puissiez la reprendre ; elles sont effacées à l’envoi ou à la fermeture de l’onglet.</p>
+        <p>Le site conserve localement votre choix de consentement et, le temps de votre visite, la source de campagne qui vous a amené (paramètres UTM) afin de l’associer à votre demande. Si vous commencez la fiche, vos réponses sur votre logement et votre contrat (jamais vos nom, téléphone ou e-mail) sont gardées dans votre navigateur le temps de la visite, pour que vous puissiez la reprendre ; elles sont effacées à l’envoi ou à la fermeture de l’onglet.</p>
       </section>
       <section>
         <h2>Modifier mes choix</h2>
         {hasAnyTracker ? (
           <p>
-            <ConsentLink className="font-semibold text-hdf underline" />
+            <ConsentLink className="font-semibold text-brand underline" />
           </p>
         ) : (
           <p>Aucun outil de mesure n’est actif actuellement sur ce site.</p>

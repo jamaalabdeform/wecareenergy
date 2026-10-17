@@ -7,10 +7,10 @@ import { Pending } from "../ui/Pending";
 import { SectionHeading } from "../ui/SectionHeading";
 
 /**
- * Preuves vérifiables (avis, qualifications, chantiers…). Rien n'est rendu en production
+ * Preuves vérifiables (avis, fournisseurs partenaires, installations…). Rien n'est rendu en production
  * tant qu'aucune preuve n'est confirmée ; en préproduction, la liste de ce qui manque.
  */
-export function WhyHdf() {
+export function WhyUs() {
   const confirmedProofs = proofs.filter((p) => p.data.status === "confirmed" && p.data.value);
   // Les avis Google sont gérés par la section GoogleReviews dès que la fiche est reliée.
   const reviewsLinked = company.googleBusiness.url.status === "confirmed" || Boolean(process.env.GOOGLE_PLACES_API_KEY && process.env.GOOGLE_PLACE_ID);
@@ -20,7 +20,7 @@ export function WhyHdf() {
   return (
     <section id={anchors.pourquoi} data-section="pourquoi" aria-labelledby="pourquoi-title" className="bg-surface py-14 sm:py-20">
       <Container>
-        <SectionHeading id="pourquoi-title" title="Pourquoi HDF Bâti ?" />
+        <SectionHeading id="pourquoi-title" title="Pourquoi WE CARE ÉNERGIE ?" />
 
         {confirmedProofs.length > 0 && (
           <ul className="mt-8 grid gap-x-10 gap-y-8 md:grid-cols-2">
@@ -32,7 +32,7 @@ export function WhyHdf() {
                   <ul className="mt-3 space-y-2.5">
                     {p.items.map((it) => (
                       <li key={it} className="relative max-w-[60ch] pl-5 text-[0.95rem] leading-relaxed text-ink">
-                        <span aria-hidden className="absolute top-[0.55em] left-0 size-2 rounded-[1px] bg-hdf" />
+                        <span aria-hidden className="absolute top-[0.55em] left-0 size-2 rounded-[1px] bg-brand" />
                         {it}
                       </li>
                     ))}

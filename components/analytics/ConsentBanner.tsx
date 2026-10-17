@@ -26,8 +26,8 @@ export function ConsentBanner() {
       setCustom(true);
       setOpen(true);
     };
-    window.addEventListener("hdf:consent-open", reopen);
-    return () => window.removeEventListener("hdf:consent-open", reopen);
+    window.addEventListener("wce:consent-open", reopen);
+    return () => window.removeEventListener("wce:consent-open", reopen);
   }, []);
 
   if (!open) return null;
@@ -41,20 +41,20 @@ export function ConsentBanner() {
       <div className="rounded-md bg-white p-5 shadow-[var(--shadow-float)] ring-1 ring-deep/10">
         <p id="consent-title" className="font-bold text-deep">Vos choix de confidentialité</p>
         <p className="mt-2 text-sm leading-relaxed text-muted">
-          Avec votre accord, HDF Bâti mesure l’audience du site et l’efficacité de ses publicités. Vous pouvez changer d’avis à tout moment.{" "}
+          Avec votre accord, WE CARE ÉNERGIE mesure l’audience du site et l’efficacité de ses publicités. Vous pouvez changer d’avis à tout moment.{" "}
           <Link href="/cookies" className="font-semibold text-deep underline underline-offset-2">En savoir plus</Link>
         </p>
         {custom && (
           <div className="mt-4 space-y-3 rounded-md bg-surface p-3 text-sm">
             {(tracking.gtmId || tracking.ga4Id) && (
               <label className="flex items-start gap-3">
-                <input type="checkbox" className="mt-0.5 size-5 accent-[#0B7A3B]" checked={analytics} onChange={(e) => setAnalytics(e.target.checked)} />
+                <input type="checkbox" className="mt-0.5 size-5 accent-[#1A6BA8]" checked={analytics} onChange={(e) => setAnalytics(e.target.checked)} />
                 <span><strong className="text-deep">Mesure d’audience</strong> — Google Analytics</span>
               </label>
             )}
             {(tracking.gtmId || tracking.metaPixelId) && (
               <label className="flex items-start gap-3">
-                <input type="checkbox" className="mt-0.5 size-5 accent-[#0B7A3B]" checked={marketing} onChange={(e) => setMarketing(e.target.checked)} />
+                <input type="checkbox" className="mt-0.5 size-5 accent-[#1A6BA8]" checked={marketing} onChange={(e) => setMarketing(e.target.checked)} />
                 <span><strong className="text-deep">Publicité</strong> — Meta (Facebook, Instagram), Google Ads</span>
               </label>
             )}
